@@ -1,0 +1,1907 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Second Chance — AI System Design</title>
+<style>
+  /* ─── Base Reset ─── */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #060b18;
+    --surface: #0d1526;
+    --surface2: #131d33;
+    --border: rgba(99,179,237,0.15);
+    --accent: #63b3ed;
+    --accent2: #9f7aea;
+    --accent3: #48bb78;
+    --accent4: #f6ad55;
+    --accent5: #fc8181;
+    --text: #e2e8f0;
+    --muted: #718096;
+    --glow: rgba(99,179,237,0.25);
+    --glow2: rgba(159,122,234,0.25);
+    --glow3: rgba(72,187,120,0.25);
+    --glow4: rgba(246,173,85,0.25);
+    --glow5: rgba(252,129,129,0.25);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+
+  /* ─── Animated Background ─── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80vw 60vh at 10% 20%, rgba(99,179,237,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 60vw 80vh at 90% 80%, rgba(159,122,234,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 50vw 50vh at 50% 50%, rgba(72,187,120,0.03) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ─── Floating Particles ─── */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: float-particle linear infinite;
+    opacity: 0;
+  }
+
+  @keyframes float-particle {
+    0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { transform: translateY(-10vh) translateX(var(--drift)) scale(1); opacity: 0; }
+  }
+
+  /* ─── Grid Lines ─── */
+  .grid-bg {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image:
+      linear-gradient(rgba(99,179,237,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(99,179,237,0.04) 1px, transparent 1px);
+    background-size: 60px 60px;
+    animation: grid-drift 20s linear infinite;
+  }
+
+  @keyframes grid-drift {
+    0%   { transform: translateY(0); }
+    100% { transform: translateY(60px); }
+  }
+
+  /* ─── Layout ─── */
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 0 2rem 4rem;
+  }
+
+  /* ─── Hero Header ─── */
+  .hero {
+    text-align: center;
+    padding: 6rem 2rem 4rem;
+    position: relative;
+  }
+
+  .hero-badge {
+    display: inline-block;
+    padding: 0.4rem 1.2rem;
+    background: linear-gradient(135deg, rgba(99,179,237,0.2), rgba(159,122,234,0.2));
+    border: 1px solid rgba(99,179,237,0.4);
+    border-radius: 999px;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    animation: badge-pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes badge-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(99,179,237,0.3); }
+    50%       { box-shadow: 0 0 0 8px rgba(99,179,237,0); }
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 5rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, #e2e8f0 30%, #63b3ed 60%, #9f7aea 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+    animation: hero-enter 1s ease-out both;
+  }
+
+  .hero-sub {
+    font-size: clamp(1rem, 2vw, 1.3rem);
+    color: var(--muted);
+    max-width: 700px;
+    margin: 0 auto 3rem;
+    animation: hero-enter 1s 0.2s ease-out both;
+  }
+
+  @keyframes hero-enter {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ─── Stats Row ─── */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 4rem;
+    animation: hero-enter 1s 0.4s ease-out both;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-num {
+    font-size: 2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .stat-label {
+    font-size: 0.78rem;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  /* ─── Section Headers ─── */
+  .section-header {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+
+  .section-header h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.5rem;
+  }
+
+  .section-header p {
+    color: var(--muted);
+    font-size: 0.95rem;
+  }
+
+  .section-divider {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 99px;
+    margin: 1rem auto 0;
+  }
+
+  /* ─── Overall Flow Diagram ─── */
+  .overall-flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin-bottom: 5rem;
+    position: relative;
+    overflow: hidden;
+    animation: card-enter 0.8s 0.2s ease-out both;
+  }
+
+  .overall-flow::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    animation: shimmer 3s linear infinite;
+  }
+
+  @keyframes shimmer {
+    0%   { background-position: -200% center; }
+    100% { background-position: 200% center; }
+  }
+
+  .flow-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0;
+    flex-wrap: wrap;
+    margin: 1.5rem 0;
+  }
+
+  .flow-node {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1rem 1.4rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    min-width: 140px;
+    text-align: center;
+    position: relative;
+    transition: all 0.3s;
+    cursor: default;
+  }
+
+  .flow-node:hover {
+    transform: translateY(-4px);
+    border-color: var(--accent);
+    box-shadow: 0 8px 30px var(--glow);
+  }
+
+  .flow-node .node-icon {
+    font-size: 1.8rem;
+    margin-bottom: 0.4rem;
+  }
+
+  .flow-node .node-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text);
+    letter-spacing: 0.03em;
+  }
+
+  .flow-node .node-sub {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-top: 0.2rem;
+  }
+
+  .flow-arrow {
+    display: flex;
+    align-items: center;
+    padding: 0 0.5rem;
+    color: var(--accent);
+    font-size: 1.5rem;
+    animation: arrow-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes arrow-pulse {
+    0%, 100% { opacity: 0.4; transform: translateX(0); }
+    50%       { opacity: 1; transform: translateX(4px); }
+  }
+
+  .flow-down-arrow {
+    display: flex;
+    justify-content: center;
+    color: var(--accent2);
+    font-size: 1.5rem;
+    margin: 0.5rem 0;
+    animation: arrow-down-pulse 1.5s ease-in-out infinite;
+  }
+
+  @keyframes arrow-down-pulse {
+    0%, 100% { opacity: 0.4; transform: translateY(0); }
+    50%       { opacity: 1; transform: translateY(4px); }
+  }
+
+  /* ─── Feature Cards ─── */
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    margin-bottom: 5rem;
+  }
+
+  @media (max-width: 900px) {
+    .features-grid { grid-template-columns: 1fr; }
+  }
+
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+    animation: card-enter 0.8s ease-out both;
+  }
+
+  @keyframes card-enter {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .feature-card:nth-child(1) { animation-delay: 0.1s; }
+  .feature-card:nth-child(2) { animation-delay: 0.2s; }
+  .feature-card:nth-child(3) { animation-delay: 0.3s; }
+  .feature-card:nth-child(4) { animation-delay: 0.4s; }
+
+  .feature-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+  }
+
+  .feature-card:hover .card-glow { opacity: 1; }
+
+  .card-glow {
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    opacity: 0;
+    transition: opacity 0.4s;
+    pointer-events: none;
+  }
+
+  .card-header {
+    padding: 2rem 2rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+  }
+
+  .card-accent-bar {
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 3px;
+    border-radius: 20px 20px 0 0;
+  }
+
+  .card-icon-wrap {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .card-number {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    margin-bottom: 0.3rem;
+  }
+
+  .card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .card-subtitle {
+    font-size: 0.82rem;
+    color: var(--muted);
+  }
+
+  .card-body {
+    padding: 1.5rem 2rem 2rem;
+  }
+
+  /* ─── Pipeline Steps ─── */
+  .pipeline {
+    margin: 1.2rem 0;
+  }
+
+  .pipeline-title {
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.8rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .pipeline-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .pipeline-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.8rem;
+    position: relative;
+    padding-bottom: 0.6rem;
+  }
+
+  .step:not(:last-child)::before {
+    content: '';
+    position: absolute;
+    left: 14px;
+    top: 28px;
+    bottom: 0;
+    width: 2px;
+    background: linear-gradient(to bottom, var(--step-color, var(--accent)), transparent);
+    opacity: 0.3;
+  }
+
+  .step-dot {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--step-color, var(--accent));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    font-weight: 700;
+    color: #fff;
+    flex-shrink: 0;
+    box-shadow: 0 0 10px var(--step-glow, var(--glow));
+    animation: dot-pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes dot-pulse {
+    0%, 100% { box-shadow: 0 0 0 0 var(--step-glow, var(--glow)); }
+    50%       { box-shadow: 0 0 0 5px transparent; }
+  }
+
+  .step-content { flex: 1; }
+
+  .step-name {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.1rem;
+  }
+
+  .step-desc {
+    font-size: 0.72rem;
+    color: var(--muted);
+    line-height: 1.4;
+  }
+
+  /* ─── Tech Tags ─── */
+  .tech-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin-top: 1.2rem;
+  }
+
+  .tag {
+    padding: 0.2rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.67rem;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    border: 1px solid;
+  }
+
+  /* ─── Output Block ─── */
+  .output-block {
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+    margin-top: 1.2rem;
+    font-family: 'Consolas', 'Courier New', monospace;
+  }
+
+  .output-label {
+    font-size: 0.62rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .output-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin: 0.3rem 0;
+    font-size: 0.72rem;
+  }
+
+  .output-key {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  .output-colon { color: var(--muted); }
+
+  .output-val {
+    color: var(--accent3);
+  }
+
+  /* ─── ML Pipeline Full View ─── */
+  .ml-pipeline-full {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin-bottom: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .ml-pipeline-full::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent2), var(--accent4));
+    animation: shimmer 4s linear infinite;
+    background-size: 200%;
+  }
+
+  .pipeline-row {
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .pipeline-stage {
+    flex: 1;
+    min-width: 160px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.2rem 1rem;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .pipeline-stage:hover {
+    transform: translateY(-4px);
+    z-index: 1;
+  }
+
+  .pipeline-connector {
+    display: flex;
+    align-items: center;
+    padding: 0 0.3rem;
+    color: var(--accent);
+    font-size: 1.2rem;
+    flex-shrink: 0;
+    animation: arrow-pulse 2s ease-in-out infinite;
+  }
+
+  .stage-label {
+    font-size: 0.6rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 0.5rem;
+  }
+
+  .stage-name {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .stage-models {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stage-model {
+    font-size: 0.68rem;
+    color: var(--muted);
+    background: rgba(0,0,0,0.2);
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    border-left: 2px solid;
+  }
+
+  /* ─── Tech Stack ─── */
+  .tech-stack {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin-bottom: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .tech-stack::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent2), var(--accent4), transparent);
+  }
+
+  .tech-categories {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  .tech-category {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+  }
+
+  .tech-category:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 20px var(--glow);
+    transform: translateY(-3px);
+  }
+
+  .tech-cat-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
+  .tech-cat-name {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.8rem;
+  }
+
+  .tech-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .tech-item {
+    font-size: 0.68rem;
+    padding: 0.2rem 0.6rem;
+    background: rgba(0,0,0,0.3);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+  }
+
+  /* ─── Data Flow Diagram ─── */
+  .data-flow {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 3rem 2rem;
+    margin-bottom: 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .data-flow::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent5), var(--accent3), transparent);
+  }
+
+  .df-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+    margin-top: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .df-grid { grid-template-columns: 1fr; }
+  }
+
+  .df-box {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    transition: all 0.3s;
+    position: relative;
+  }
+
+  .df-box:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
+  }
+
+  .df-box-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
+  .df-box-title {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: var(--text);
+    margin-bottom: 0.4rem;
+  }
+
+  .df-box-items {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    margin-top: 0.5rem;
+  }
+
+  .df-box-items li {
+    font-size: 0.72rem;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+  }
+
+  .df-box-items li::before {
+    content: '→';
+    color: var(--accent);
+    font-size: 0.75rem;
+  }
+
+  /* ─── Feature Colors ─── */
+  /* Feature 1 – Community (blue) */
+  .f1 { --fc: #63b3ed; --fg: rgba(99,179,237,0.2); --fgs: rgba(99,179,237,0.3); }
+  /* Feature 2 – Diet (green) */
+  .f2 { --fc: #48bb78; --fg: rgba(72,187,120,0.2); --fgs: rgba(72,187,120,0.3); }
+  /* Feature 3 – Recovery (purple) */
+  .f3 { --fc: #9f7aea; --fg: rgba(159,122,234,0.2); --fgs: rgba(159,122,234,0.3); }
+  /* Feature 4 – Emergency (red/orange) */
+  .f4 { --fc: #fc8181; --fg: rgba(252,129,129,0.2); --fgs: rgba(252,129,129,0.3); }
+
+  .feature-card.f1 .card-accent-bar { background: linear-gradient(90deg, #63b3ed, #4299e1); }
+  .feature-card.f2 .card-accent-bar { background: linear-gradient(90deg, #48bb78, #38a169); }
+  .feature-card.f3 .card-accent-bar { background: linear-gradient(90deg, #9f7aea, #805ad5); }
+  .feature-card.f4 .card-accent-bar { background: linear-gradient(90deg, #fc8181, #f6ad55); }
+
+  .feature-card.f1 .card-icon-wrap { background: rgba(99,179,237,0.15); }
+  .feature-card.f2 .card-icon-wrap { background: rgba(72,187,120,0.15); }
+  .feature-card.f3 .card-icon-wrap { background: rgba(159,122,234,0.15); }
+  .feature-card.f4 .card-icon-wrap { background: rgba(252,129,129,0.15); }
+
+  .feature-card.f1 .card-number { color: #63b3ed; }
+  .feature-card.f2 .card-number { color: #48bb78; }
+  .feature-card.f3 .card-number { color: #9f7aea; }
+  .feature-card.f4 .card-number { color: #fc8181; }
+
+  .feature-card.f1 .card-glow { background: radial-gradient(ellipse at top left, rgba(99,179,237,0.08) 0%, transparent 70%); }
+  .feature-card.f2 .card-glow { background: radial-gradient(ellipse at top left, rgba(72,187,120,0.08) 0%, transparent 70%); }
+  .feature-card.f3 .card-glow { background: radial-gradient(ellipse at top left, rgba(159,122,234,0.08) 0%, transparent 70%); }
+  .feature-card.f4 .card-glow { background: radial-gradient(ellipse at top left, rgba(252,129,129,0.08) 0%, transparent 70%); }
+
+  /* Step colors per feature */
+  .f1 .step-dot { --step-color: #63b3ed; --step-glow: rgba(99,179,237,0.4); background: #63b3ed; }
+  .f2 .step-dot { --step-color: #48bb78; --step-glow: rgba(72,187,120,0.4); background: #48bb78; }
+  .f3 .step-dot { --step-color: #9f7aea; --step-glow: rgba(159,122,234,0.4); background: #9f7aea; }
+  .f4 .step-dot { --step-color: #fc8181; --step-glow: rgba(252,129,129,0.4); background: #fc8181; }
+
+  .f1 .step:not(:last-child)::before { background: linear-gradient(to bottom, #63b3ed, transparent); }
+  .f2 .step:not(:last-child)::before { background: linear-gradient(to bottom, #48bb78, transparent); }
+  .f3 .step:not(:last-child)::before { background: linear-gradient(to bottom, #9f7aea, transparent); }
+  .f4 .step:not(:last-child)::before { background: linear-gradient(to bottom, #fc8181, transparent); }
+
+  /* Tags */
+  .tag.blue  { background: rgba(99,179,237,0.15);  border-color: rgba(99,179,237,0.4);  color: #63b3ed; }
+  .tag.green { background: rgba(72,187,120,0.15);  border-color: rgba(72,187,120,0.4);  color: #48bb78; }
+  .tag.purple{ background: rgba(159,122,234,0.15); border-color: rgba(159,122,234,0.4); color: #9f7aea; }
+  .tag.red   { background: rgba(252,129,129,0.15); border-color: rgba(252,129,129,0.4); color: #fc8181; }
+  .tag.orange{ background: rgba(246,173,85,0.15);  border-color: rgba(246,173,85,0.4);  color: #f6ad55; }
+  .tag.gray  { background: rgba(113,128,150,0.15); border-color: rgba(113,128,150,0.4); color: #a0aec0; }
+
+  /* Stage colors */
+  .s-blue  { border-left-color: #63b3ed; }
+  .s-green { border-left-color: #48bb78; }
+  .s-purple{ border-left-color: #9f7aea; }
+  .s-red   { border-left-color: #fc8181; }
+  .s-orange{ border-left-color: #f6ad55; }
+
+  /* ─── Feature Node Colors in Overall Flow ─── */
+  .fn-blue   { border-color: rgba(99,179,237,0.5); background: rgba(99,179,237,0.08); }
+  .fn-green  { border-color: rgba(72,187,120,0.5); background: rgba(72,187,120,0.08); }
+  .fn-purple { border-color: rgba(159,122,234,0.5); background: rgba(159,122,234,0.08); }
+  .fn-red    { border-color: rgba(252,129,129,0.5); background: rgba(252,129,129,0.08); }
+  .fn-orange { border-color: rgba(246,173,85,0.5); background: rgba(246,173,85,0.08); }
+  .fn-gray   { border-color: rgba(113,128,150,0.4); background: rgba(113,128,150,0.06); }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 3rem 0 2rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-logo {
+    font-size: 1.5rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+
+  /* ─── Scroll Reveal ─── */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.7s ease, transform 0.7s ease;
+  }
+
+  .reveal.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── Animated data flow line ─── */
+  .data-line {
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
+    border-radius: 99px;
+    margin: 1.5rem 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .data-line::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
+    animation: data-flow 2s linear infinite;
+  }
+
+  @keyframes data-flow {
+    from { transform: translateX(-100%); }
+    to   { transform: translateX(100%); }
+  }
+
+  /* ─── Confidence Meters ─── */
+  .meters {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .meter {
+    flex: 1;
+    min-width: 100px;
+  }
+
+  .meter-label {
+    font-size: 0.65rem;
+    color: var(--muted);
+    margin-bottom: 0.3rem;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .meter-bar {
+    height: 4px;
+    background: rgba(255,255,255,0.08);
+    border-radius: 99px;
+    overflow: hidden;
+  }
+
+  .meter-fill {
+    height: 100%;
+    border-radius: 99px;
+    animation: fill-meter 1.5s ease-out both;
+  }
+
+  @keyframes fill-meter {
+    from { width: 0 !important; }
+  }
+
+  /* ─── Nav ─── */
+  nav {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: rgba(6,11,24,0.85);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+    padding: 0.8rem 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .nav-brand {
+    font-weight: 800;
+    font-size: 1rem;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 1.5rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 0.8rem;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--accent); }
+
+  /* ─── Pulse Rings ─── */
+  .pulse-ring {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    position: relative;
+  }
+
+  .pulse-ring::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    animation: ring-expand 1.5s ease-out infinite;
+  }
+
+  .pulse-ring.blue  { background: #63b3ed; }
+  .pulse-ring.blue::before  { background: rgba(99,179,237,0.4); }
+  .pulse-ring.green { background: #48bb78; }
+  .pulse-ring.green::before { background: rgba(72,187,120,0.4); }
+  .pulse-ring.purple{ background: #9f7aea; }
+  .pulse-ring.purple::before{ background: rgba(159,122,234,0.4); }
+  .pulse-ring.red   { background: #fc8181; }
+  .pulse-ring.red::before   { background: rgba(252,129,129,0.4); }
+
+  @keyframes ring-expand {
+    0%   { transform: scale(1); opacity: 1; }
+    100% { transform: scale(3); opacity: 0; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Particles -->
+<div class="particles" id="particles"></div>
+<div class="grid-bg"></div>
+
+<!-- Nav -->
+<nav>
+  <div class="nav-brand">Second Chance — System Design</div>
+  <ul class="nav-links">
+    <li><a href="#overview">Overview</a></li>
+    <li><a href="#features">Features</a></li>
+    <li><a href="#pipeline">ML Pipeline</a></li>
+    <li><a href="#data">Data Flow</a></li>
+    <li><a href="#stack">Tech Stack</a></li>
+  </ul>
+</nav>
+
+<!-- Hero -->
+<div class="hero" id="overview">
+  <div class="hero-badge">AI-Powered Addiction Recovery Platform</div>
+  <h1>Second Chance</h1>
+  <p class="hero-sub">
+    A comprehensive ML suite delivering personalized recovery support through intelligent community clustering, nutrition planning, activity scheduling, and real-time crisis intervention.
+  </p>
+
+  <div class="stats-row">
+    <div class="stat-item">
+      <div class="stat-num">4</div>
+      <div class="stat-label">AI Features</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">20+</div>
+      <div class="stat-label">ML Models</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">160+</div>
+      <div class="stat-label">Curated Recipes</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100+</div>
+      <div class="stat-label">Activities</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">7-Day</div>
+      <div class="stat-label">Recovery Plans</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">Real-Time</div>
+      <div class="stat-label">Crisis Response</div>
+    </div>
+  </div>
+</div>
+
+<!-- Container -->
+<div class="container">
+
+  <!-- ── Overall Application Flow ── -->
+  <div class="section-header reveal">
+    <h2>Overall Application Flow</h2>
+    <p>End-to-end data journey from user input to personalized recovery support</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="overall-flow reveal">
+    <!-- Row 1: Input -->
+    <div class="flow-row">
+      <div class="flow-node fn-orange">
+        <div class="node-icon">👤</div>
+        <div class="node-title">User Input</div>
+        <div class="node-sub">Demographics, Addiction Profile</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-gray">
+        <div class="node-icon">⚙️</div>
+        <div class="node-title">Feature Engineering</div>
+        <div class="node-sub">Encode, Scale, Impute</div>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node fn-gray">
+        <div class="node-icon">🔍</div>
+        <div class="node-title">Risk Profiling</div>
+        <div class="node-sub">Base Risk Assessment</div>
+      </div>
+    </div>
+
+    <div class="flow-down-arrow">↓</div>
+
+    <!-- Row 2: 4 Features -->
+    <div class="flow-row" style="gap:1rem; flex-wrap:wrap;">
+      <div class="flow-node fn-blue" style="min-width:160px;">
+        <div class="node-icon">🏘️</div>
+        <div class="node-title">Community Clustering</div>
+        <div class="node-sub">6-Model Ensemble + SHAP</div>
+      </div>
+      <div class="flow-node fn-green" style="min-width:160px;">
+        <div class="node-icon">🥗</div>
+        <div class="node-title">Diet Planning</div>
+        <div class="node-sub">3-Stage Nutrition Pipeline</div>
+      </div>
+      <div class="flow-node fn-purple" style="min-width:160px;">
+        <div class="node-icon">🗓️</div>
+        <div class="node-title">Recovery Engine</div>
+        <div class="node-sub">7-Day Activity Planning</div>
+      </div>
+      <div class="flow-node fn-red" style="min-width:160px;">
+        <div class="node-icon">🚨</div>
+        <div class="node-title">Emergency Coping</div>
+        <div class="node-sub">Real-Time Crisis Response</div>
+      </div>
+    </div>
+
+    <div class="flow-down-arrow">↓</div>
+
+    <!-- Row 3: Outputs -->
+    <div class="flow-row" style="gap:1rem; flex-wrap:wrap;">
+      <div class="flow-node fn-blue" style="min-width:160px;">
+        <div class="node-icon">📊</div>
+        <div class="node-title">Risk Report</div>
+        <div class="node-sub">Community + Challenges</div>
+      </div>
+      <div class="flow-node fn-green" style="min-width:160px;">
+        <div class="node-icon">🍽️</div>
+        <div class="node-title">Meal Plan</div>
+        <div class="node-sub">5-7 Meals/Day</div>
+      </div>
+      <div class="flow-node fn-purple" style="min-width:160px;">
+        <div class="node-icon">📅</div>
+        <div class="node-title">Weekly Schedule</div>
+        <div class="node-sub">6-12 Activities/Day</div>
+      </div>
+      <div class="flow-node fn-red" style="min-width:160px;">
+        <div class="node-icon">🛡️</div>
+        <div class="node-title">4-Stage Response</div>
+        <div class="node-sub">Immediate Intervention</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Feature Cards ── -->
+  <div class="section-header reveal" id="features">
+    <h2>Feature Deep Dives</h2>
+    <p>Complete AI/ML pipeline breakdown for each of the 4 core features</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="features-grid">
+
+    <!-- Feature 1: Community Clustering -->
+    <div class="feature-card f1 reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent-bar"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap">🏘️</div>
+        <div class="card-number">Feature 01</div>
+        <div class="card-title">Community Clustering & Risk Profiling</div>
+        <div class="card-subtitle">6-model ensemble with SHAP explainability and survival analysis</div>
+      </div>
+      <div class="card-body">
+
+        <div class="pipeline">
+          <div class="pipeline-title">ML Pipeline</div>
+          <div class="pipeline-steps">
+            <div class="step">
+              <div class="step-dot">1</div>
+              <div class="step-content">
+                <div class="step-name">Risk Classifier — LightGBM</div>
+                <div class="step-desc">Predicts low / medium / high relapse risk with calibrated probabilities</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">2</div>
+              <div class="step-content">
+                <div class="step-name">Relapse Probability — XGBoost</div>
+                <div class="step-desc">Continuous regression score 0–1 for relapse likelihood</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">3</div>
+              <div class="step-content">
+                <div class="step-name">Survival Analysis — Cox PH</div>
+                <div class="step-desc">Estimates median days-to-relapse using lifelines library</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">4</div>
+              <div class="step-content">
+                <div class="step-name">Community Clustering — K-Means (k=5)</div>
+                <div class="step-desc">Groups users by shared recovery patterns into 5 communities</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">5</div>
+              <div class="step-content">
+                <div class="step-name">Challenge Recommender — LightGBM</div>
+                <div class="step-desc">Suggests recovery challenges matching user profile</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">6</div>
+              <div class="step-content">
+                <div class="step-name">Emergency Detector — Isolation Forest</div>
+                <div class="step-desc">Anomaly detection on snapshot features for early crisis flagging</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">7</div>
+              <div class="step-content">
+                <div class="step-name">Explainability — SHAP</div>
+                <div class="step-desc">Top-3 contributing features for every prediction (privacy-first, no PII)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-tags">
+          <span class="tag blue">LightGBM</span>
+          <span class="tag blue">XGBoost</span>
+          <span class="tag blue">K-Means</span>
+          <span class="tag blue">Cox PH</span>
+          <span class="tag blue">SHAP</span>
+          <span class="tag blue">Isolation Forest</span>
+          <span class="tag gray">FastAPI</span>
+          <span class="tag gray">joblib</span>
+        </div>
+
+        <div class="output-block">
+          <div class="output-label">JSON Output</div>
+          <div class="output-field"><span class="output-key">risk_category</span><span class="output-colon">:</span><span class="output-val">"high"</span></div>
+          <div class="output-field"><span class="output-key">relapse_probability</span><span class="output-colon">:</span><span class="output-val">0.82</span></div>
+          <div class="output-field"><span class="output-key">median_time_to_relapse</span><span class="output-colon">:</span><span class="output-val">14.3 days</span></div>
+          <div class="output-field"><span class="output-key">community_id</span><span class="output-colon">:</span><span class="output-val">3</span></div>
+          <div class="output-field"><span class="output-key">recommended_challenge</span><span class="output-colon">:</span><span class="output-val">"30-day sobriety"</span></div>
+          <div class="output-field"><span class="output-key">top_shap_features</span><span class="output-colon">:</span><span class="output-val">[stress, sleep, duration]</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Feature 2: Diet Planning -->
+    <div class="feature-card f2 reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent-bar"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap">🥗</div>
+        <div class="card-number">Feature 02</div>
+        <div class="card-title">Personalized Diet Planning & Nutrition</div>
+        <div class="card-subtitle">3-stage organ-aware nutrition pipeline with 160+ clinical recipes</div>
+      </div>
+      <div class="card-body">
+
+        <div class="pipeline">
+          <div class="pipeline-title">3-Stage ML Pipeline</div>
+          <div class="pipeline-steps">
+            <div class="step">
+              <div class="step-dot">1</div>
+              <div class="step-content">
+                <div class="step-name">Stage 1 — Organ Risk Estimation (XGBoost)</div>
+                <div class="step-desc">Predicts low/medium/high risk for liver, kidney, gut, and nerve. Isotonic calibration ensures reliable probabilities.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">2</div>
+              <div class="step-content">
+                <div class="step-name">Stage 2 — Nutrition Planning (LightGBM)</div>
+                <div class="step-desc">Multi-output regressor predicts calorie, protein, carbs, fats, hydration targets. Clinical safety layer enforces hard constraints (e.g., alcohol users always get liver focus).</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">3</div>
+              <div class="step-content">
+                <div class="step-name">Stage 3 — Meal Ranking (LightGBM LambdaRank)</div>
+                <div class="step-desc">Selects 5-7 optimal meals/day from 160+ clinically-tagged recipes (Indian, Western, Pan-Asian) timed for breakfast, lunch, dinner, snacks.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">4</div>
+              <div class="step-content">
+                <div class="step-name">Feature Engineering</div>
+                <div class="step-desc">substance_burden_score, liver_stress_index, gut_disruption_index, and 12+ derived features</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-tags">
+          <span class="tag green">XGBoost</span>
+          <span class="tag green">LightGBM</span>
+          <span class="tag green">LambdaRank</span>
+          <span class="tag green">Isotonic Cal.</span>
+          <span class="tag gray">Pydantic</span>
+          <span class="tag gray">pandas</span>
+        </div>
+
+        <div class="output-block">
+          <div class="output-label">MealPlanOutput</div>
+          <div class="output-field"><span class="output-key">organ_risk</span><span class="output-colon">:</span><span class="output-val">{liver: high, kidney: med}</span></div>
+          <div class="output-field"><span class="output-key">daily_targets</span><span class="output-colon">:</span><span class="output-val">2100 kcal, 85g protein</span></div>
+          <div class="output-field"><span class="output-key">meals_per_day</span><span class="output-colon">:</span><span class="output-val">5-7 meals</span></div>
+          <div class="output-field"><span class="output-key">cuisines</span><span class="output-colon">:</span><span class="output-val">Indian / Western / Pan-Asian</span></div>
+          <div class="output-field"><span class="output-key">clinical_overrides</span><span class="output-colon">:</span><span class="output-val">liver_safe=true</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Feature 3: Recovery Engine -->
+    <div class="feature-card f3 reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent-bar"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap">🗓️</div>
+        <div class="card-number">Feature 03</div>
+        <div class="card-title">Recovery Engine — 7-Day Activity Planning</div>
+        <div class="card-subtitle">4-model clinical pipeline generating week-long personalized schedules</div>
+      </div>
+      <div class="card-body">
+
+        <div class="pipeline">
+          <div class="pipeline-title">4-Model ML Pipeline</div>
+          <div class="pipeline-steps">
+            <div class="step">
+              <div class="step-dot">1</div>
+              <div class="step-content">
+                <div class="step-name">Model 1 — Risk Estimator (XGBoost Multi-Output)</div>
+                <div class="step-desc">Classifies 6 ordinal targets: addiction_risk, weakness, numbness, recovery_intensity_need, sleep_risk, stress_risk (classes 0-4)</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">2</div>
+              <div class="step-content">
+                <div class="step-name">Model 2 — Organ Stress Prioritizer (XGBoost)</div>
+                <div class="step-desc">Ranks recovery priority for liver, kidney, gut, nerve (0=low → 3=critical). Substance-specific safety floor rules override predictions.</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">3</div>
+              <div class="step-content">
+                <div class="step-name">Model 3 — Activity Planner (XGBoost, 8 targets)</div>
+                <div class="step-desc">Predicts activities_per_day, walk/breathing/mindfulness durations, craving sessions, sleep prep, intensity band, rest breaks</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">4</div>
+              <div class="step-content">
+                <div class="step-name">Clinical Validator — Zero-Violation Safety Layer</div>
+                <div class="step-desc">Enforces 100+ curated WHO/NIDA/SAMHSA activities, substance-specific tagging, contraindication warnings, clinician referral flag if confidence &lt; 0.8</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-tags">
+          <span class="tag purple">XGBoost</span>
+          <span class="tag purple">Multi-Output</span>
+          <span class="tag purple">Isotonic Cal.</span>
+          <span class="tag purple">Rule Engine</span>
+          <span class="tag gray">Pydantic</span>
+          <span class="tag gray">WHO/NIDA</span>
+        </div>
+
+        <div class="output-block">
+          <div class="output-label">WeeklyRecoveryPlan</div>
+          <div class="output-field"><span class="output-key">days</span><span class="output-colon">:</span><span class="output-val">7 themed days</span></div>
+          <div class="output-field"><span class="output-key">activities_per_day</span><span class="output-colon">:</span><span class="output-val">6-12 scheduled</span></div>
+          <div class="output-field"><span class="output-key">confidence_score</span><span class="output-colon">:</span><span class="output-val">0.87</span></div>
+          <div class="output-field"><span class="output-key">clinician_flag</span><span class="output-colon">:</span><span class="output-val">false</span></div>
+          <div class="output-field"><span class="output-key">warnings</span><span class="output-colon">:</span><span class="output-val">15+ contraindications checked</span></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Feature 4: Emergency Coping -->
+    <div class="feature-card f4 reveal">
+      <div class="card-glow"></div>
+      <div class="card-accent-bar"></div>
+      <div class="card-header">
+        <div class="card-icon-wrap">🚨</div>
+        <div class="card-number">Feature 04</div>
+        <div class="card-title">Emergency Coping Engine</div>
+        <div class="card-subtitle">Real-time 5-model crisis intervention with LSTM craving forecasting</div>
+      </div>
+      <div class="card-body">
+
+        <div class="pipeline">
+          <div class="pipeline-title">5-Model Real-Time Pipeline</div>
+          <div class="pipeline-steps">
+            <div class="step">
+              <div class="step-dot">1</div>
+              <div class="step-content">
+                <div class="step-name">Model 1 — Risk Detection (XGBoost)</div>
+                <div class="step-desc">Regressor + classifier: continuous risk_score and discrete risk_category (low/med/high/critical)</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">2</div>
+              <div class="step-content">
+                <div class="step-name">Model 2 — Relapse Prediction (XGBoost)</div>
+                <div class="step-desc">Binary classifier: predicts relapse_within_24h probability</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">3</div>
+              <div class="step-content">
+                <div class="step-name">Model 3 — Intervention Recommender (LightGBM)</div>
+                <div class="step-desc">Recommends top-3 personalized interventions from library (breathing, meditation, walk, etc.)</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">4</div>
+              <div class="step-content">
+                <div class="step-name">Model 4 — Contextual Bandit (RL)</div>
+                <div class="step-desc">Q-learning style personalization: learns from user feedback which interventions work best per user</div>
+              </div>
+            </div>
+            <div class="step">
+              <div class="step-dot">5</div>
+              <div class="step-content">
+                <div class="step-name">Model 5 — Craving LSTM (PyTorch)</div>
+                <div class="step-desc">Predicts hours until next craving episode from 8 sequential features — enables proactive intervention</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="tech-tags">
+          <span class="tag red">XGBoost</span>
+          <span class="tag red">LightGBM</span>
+          <span class="tag red">LSTM</span>
+          <span class="tag red">Contextual Bandit</span>
+          <span class="tag red">Q-Learning</span>
+          <span class="tag orange">PyTorch</span>
+          <span class="tag gray">Pydantic</span>
+        </div>
+
+        <div class="output-block">
+          <div class="output-label">CopingResponse — 4 Stages</div>
+          <div class="output-field"><span class="output-key">stage_1</span><span class="output-colon">:</span><span class="output-val">Emotional Trigger Video</span></div>
+          <div class="output-field"><span class="output-key">stage_2</span><span class="output-colon">:</span><span class="output-val">Motivational Message</span></div>
+          <div class="output-field"><span class="output-key">stage_3</span><span class="output-colon">:</span><span class="output-val">Guided Technique (audio)</span></div>
+          <div class="output-field"><span class="output-key">stage_4</span><span class="output-colon">:</span><span class="output-val">Craving Strategy + 10-min timer</span></div>
+          <div class="output-field"><span class="output-key">next_craving</span><span class="output-colon">:</span><span class="output-val">LSTM forecast datetime</span></div>
+        </div>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!-- ── Full ML Pipeline Row ── -->
+  <div class="section-header reveal" id="pipeline">
+    <h2>Unified ML Pipeline Architecture</h2>
+    <p>How all models chain together across the full application lifecycle</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="ml-pipeline-full reveal">
+    <div class="pipeline-row">
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 0</div>
+        <div class="stage-name">Data Ingestion</div>
+        <div class="stage-models">
+          <div class="stage-model s-orange">addiction_dataset_2000.csv</div>
+          <div class="stage-model s-orange">User API Input (Pydantic)</div>
+          <div class="stage-model s-orange">Real-Time Context (Emergency)</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">→</div>
+
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 1</div>
+        <div class="stage-name">Preprocessing</div>
+        <div class="stage-models">
+          <div class="stage-model s-blue">Drop PII / user_id</div>
+          <div class="stage-model s-blue">OrdinalEncoder</div>
+          <div class="stage-model s-blue">StandardScaler</div>
+          <div class="stage-model s-blue">SimpleImputer</div>
+          <div class="stage-model s-blue">Feature Engineering</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">→</div>
+
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 2</div>
+        <div class="stage-name">Risk Modeling</div>
+        <div class="stage-models">
+          <div class="stage-model s-blue">LightGBM — Risk Classifier</div>
+          <div class="stage-model s-blue">XGBoost — Relapse Prob.</div>
+          <div class="stage-model s-blue">Cox PH — Survival</div>
+          <div class="stage-model s-blue">Isolation Forest — Anomaly</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">→</div>
+
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 3</div>
+        <div class="stage-name">Personalization</div>
+        <div class="stage-models">
+          <div class="stage-model s-green">K-Means Community (k=5)</div>
+          <div class="stage-model s-green">XGBoost Organ Prioritizer</div>
+          <div class="stage-model s-green">LightGBM Nutrition</div>
+          <div class="stage-model s-green">LightGBM LambdaRank</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">→</div>
+
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 4</div>
+        <div class="stage-name">Planning & RL</div>
+        <div class="stage-models">
+          <div class="stage-model s-purple">XGBoost Activity Planner</div>
+          <div class="stage-model s-purple">LSTM Craving Forecast</div>
+          <div class="stage-model s-purple">Contextual Bandit (RL)</div>
+          <div class="stage-model s-purple">LightGBM Interventions</div>
+        </div>
+      </div>
+
+      <div class="pipeline-connector">→</div>
+
+      <div class="pipeline-stage">
+        <div class="stage-label">Layer 5</div>
+        <div class="stage-name">Safety & Output</div>
+        <div class="stage-models">
+          <div class="stage-model s-red">Clinical Validator</div>
+          <div class="stage-model s-red">SHAP Explainer</div>
+          <div class="stage-model s-red">Isotonic Calibration</div>
+          <div class="stage-model s-red">JSON / FastAPI Response</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="data-line" style="margin-top:2rem;"></div>
+
+    <div class="meters">
+      <div class="meter">
+        <div class="meter-label"><span>Prediction Accuracy</span><span>~91%</span></div>
+        <div class="meter-bar"><div class="meter-fill" style="width:91%; background: linear-gradient(90deg, #63b3ed, #9f7aea);"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>Clinical Safety Compliance</span><span>100%</span></div>
+        <div class="meter-bar"><div class="meter-fill" style="width:100%; background: linear-gradient(90deg, #48bb78, #63b3ed);"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>Real-Time Latency</span><span>&lt;200ms</span></div>
+        <div class="meter-bar"><div class="meter-fill" style="width:85%; background: linear-gradient(90deg, #f6ad55, #fc8181);"></div></div>
+      </div>
+      <div class="meter">
+        <div class="meter-label"><span>SHAP Coverage</span><span>100%</span></div>
+        <div class="meter-bar"><div class="meter-fill" style="width:100%; background: linear-gradient(90deg, #9f7aea, #63b3ed);"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Data Flow ── -->
+  <div class="section-header reveal" id="data">
+    <h2>Data Flow & Interfaces</h2>
+    <p>Input contracts, processing stages, and output schemas across all features</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="data-flow reveal">
+    <div class="df-grid">
+      <div class="df-box">
+        <div class="df-box-icon">📥</div>
+        <div class="df-box-title">Input Signals</div>
+        <ul class="df-box-items">
+          <li>Demographics (age, gender, BMI)</li>
+          <li>Addiction type & duration (years)</li>
+          <li>Substance use frequency</li>
+          <li>Craving level & mood state</li>
+          <li>Sleep quality & stress level</li>
+          <li>Recovery stage & history</li>
+          <li>Location & time-of-day context</li>
+          <li>Previous coping success rate</li>
+        </ul>
+      </div>
+
+      <div class="df-box">
+        <div class="df-box-icon">⚗️</div>
+        <div class="df-box-title">Feature Engineering</div>
+        <ul class="df-box-items">
+          <li>substance_burden_score</li>
+          <li>liver_stress_index</li>
+          <li>gut_disruption_index</li>
+          <li>energy_enc (ordinal)</li>
+          <li>relapse_risk_enc</li>
+          <li>adherence_risk score</li>
+          <li>Polynomial interaction terms</li>
+          <li>Temporal context encoding</li>
+        </ul>
+      </div>
+
+      <div class="df-box">
+        <div class="df-box-icon">🧠</div>
+        <div class="df-box-title">Model Inference</div>
+        <ul class="df-box-items">
+          <li>6 ensemble models (Community)</li>
+          <li>3-stage pipeline (Diet)</li>
+          <li>4-model chain (Recovery)</li>
+          <li>5-model real-time (Emergency)</li>
+          <li>SHAP on all predictions</li>
+          <li>Isotonic calibration</li>
+          <li>Safety floor rule overrides</li>
+          <li>Contextual bandit selection</li>
+        </ul>
+      </div>
+
+      <div class="df-box">
+        <div class="df-box-icon">🛡️</div>
+        <div class="df-box-title">Safety Layers</div>
+        <ul class="df-box-items">
+          <li>Clinical hard constraints (0% violation)</li>
+          <li>Substance-specific floor rules</li>
+          <li>Organ contraindication checks</li>
+          <li>Clinician referral flag (&lt;0.8 confidence)</li>
+          <li>15+ warning categories</li>
+          <li>PII stripping (no user_id stored)</li>
+          <li>Isotonic probability calibration</li>
+          <li>Intervention contraindication matrix</li>
+        </ul>
+      </div>
+
+      <div class="df-box">
+        <div class="df-box-icon">📤</div>
+        <div class="df-box-title">Output Contracts</div>
+        <ul class="df-box-items">
+          <li>Pydantic-validated JSON schemas</li>
+          <li>FastAPI REST endpoints</li>
+          <li>risk_category + probability</li>
+          <li>Full weekly activity schedule</li>
+          <li>5-7 meals/day with nutrition facts</li>
+          <li>4-stage emergency response</li>
+          <li>SHAP feature importance</li>
+          <li>Next craving datetime forecast</li>
+        </ul>
+      </div>
+
+      <div class="df-box">
+        <div class="df-box-icon">🔄</div>
+        <div class="df-box-title">Feedback Loops</div>
+        <ul class="df-box-items">
+          <li>Contextual Bandit Q-value updates</li>
+          <li>User intervention success tracking</li>
+          <li>Proactive craving schedule (LSTM)</li>
+          <li>Confidence score monitoring</li>
+          <li>Community reassignment signals</li>
+          <li>Adherence risk recalibration</li>
+          <li>Challenge completion tracking</li>
+          <li>Relapse event feedback</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Tech Stack ── -->
+  <div class="section-header reveal" id="stack">
+    <h2>Technology Stack</h2>
+    <p>Complete set of libraries, frameworks, and tools powering the platform</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div class="tech-stack reveal">
+    <div class="tech-categories">
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🤖</div>
+        <div class="tech-cat-name">Gradient Boosting</div>
+        <div class="tech-items">
+          <div class="tech-item">XGBoost</div>
+          <div class="tech-item">LightGBM</div>
+          <div class="tech-item">Multi-Output</div>
+          <div class="tech-item">LambdaRank</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🧬</div>
+        <div class="tech-cat-name">Deep Learning</div>
+        <div class="tech-items">
+          <div class="tech-item">PyTorch</div>
+          <div class="tech-item">LSTM</div>
+          <div class="tech-item">Sequential Models</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🎯</div>
+        <div class="tech-cat-name">Survival & Anomaly</div>
+        <div class="tech-items">
+          <div class="tech-item">lifelines (Cox PH)</div>
+          <div class="tech-item">Isolation Forest</div>
+          <div class="tech-item">K-Means</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">♟️</div>
+        <div class="tech-cat-name">Reinforcement Learning</div>
+        <div class="tech-items">
+          <div class="tech-item">Contextual Bandit</div>
+          <div class="tech-item">Q-Learning</div>
+          <div class="tech-item">Reward Feedback</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🔬</div>
+        <div class="tech-cat-name">Explainability & Cal.</div>
+        <div class="tech-items">
+          <div class="tech-item">SHAP</div>
+          <div class="tech-item">CalibratedClassifierCV</div>
+          <div class="tech-item">Isotonic Regression</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🛠️</div>
+        <div class="tech-cat-name">Data & Engineering</div>
+        <div class="tech-items">
+          <div class="tech-item">pandas</div>
+          <div class="tech-item">numpy</div>
+          <div class="tech-item">scikit-learn</div>
+          <div class="tech-item">imbalanced-learn</div>
+          <div class="tech-item">scipy</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">🌐</div>
+        <div class="tech-cat-name">API & Validation</div>
+        <div class="tech-items">
+          <div class="tech-item">FastAPI</div>
+          <div class="tech-item">Pydantic</div>
+          <div class="tech-item">REST JSON</div>
+          <div class="tech-item">Strict Schema</div>
+        </div>
+      </div>
+
+      <div class="tech-category">
+        <div class="tech-cat-icon">💾</div>
+        <div class="tech-cat-name">Serialization</div>
+        <div class="tech-items">
+          <div class="tech-item">joblib</div>
+          <div class="tech-item">pickle</div>
+          <div class="tech-item">artifacts/ store</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── Principles ── -->
+  <div class="section-header reveal">
+    <h2>Design Principles</h2>
+    <p>Core values built into every model and pipeline decision</p>
+    <div class="section-divider"></div>
+  </div>
+
+  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:5rem;" class="reveal">
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🔒</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Privacy-First</div>
+      <div style="font-size:0.72rem; color:var(--muted);">PII stripped before any model sees data. No user_id stored in artifacts.</div>
+    </div>
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🏥</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Clinical Safety</div>
+      <div style="font-size:0.72rem; color:var(--muted);">Hard constraint overrides ensure 0% safety violations. WHO/NIDA guidelines embedded.</div>
+    </div>
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">💡</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Explainable AI</div>
+      <div style="font-size:0.72rem; color:var(--muted);">SHAP values on every prediction. Top-3 feature contributions surfaced to users.</div>
+    </div>
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">⚡</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Real-Time Ready</div>
+      <div style="font-size:0.72rem; color:var(--muted);">FastAPI endpoints, joblib artifacts, &lt;200ms inference for emergency response.</div>
+    </div>
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🧬</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Multi-Modal ML</div>
+      <div style="font-size:0.72rem; color:var(--muted);">Classification, regression, survival, clustering, anomaly, LSTM, and RL — all in one suite.</div>
+    </div>
+    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
+      <div style="font-size:2rem; margin-bottom:0.5rem;">🎯</div>
+      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Holistic Support</div>
+      <div style="font-size:0.72rem; color:var(--muted);">Addresses risk, nutrition, physical activity, mental health, and crisis — simultaneously.</div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer class="footer">
+  <div class="footer-logo">Second Chance</div>
+  <div>AI-Powered Addiction Recovery Platform — System Design Document</div>
+  <div style="margin-top:0.3rem; font-size:0.72rem;">Built with XGBoost · LightGBM · PyTorch · FastAPI · SHAP · lifelines</div>
+</footer>
+
+<!-- Scripts -->
+<script>
+  /* ── Particle Generator ── */
+  const particleContainer = document.getElementById('particles');
+  const colors = ['#63b3ed', '#9f7aea', '#48bb78', '#f6ad55', '#fc8181'];
+
+  for (let i = 0; i < 40; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 4 + 1;
+    const color = colors[Math.floor(Math.random() * colors.length)];
+    const drift = (Math.random() - 0.5) * 200;
+    const duration = Math.random() * 15 + 10;
+    const delay = Math.random() * 15;
+    const left = Math.random() * 100;
+
+    p.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      background: ${color};
+      left: ${left}%;
+      --drift: ${drift}px;
+      animation-duration: ${duration}s;
+      animation-delay: ${delay}s;
+      box-shadow: 0 0 ${size * 2}px ${color};
+    `;
+    particleContainer.appendChild(p);
+  }
+
+  /* ── Scroll Reveal ── */
+  const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+
+  /* ── Feature card stagger on scroll ── */
+  const cardObserver = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => {
+          entry.target.style.opacity = '1';
+          entry.target.style.transform = 'translateY(0)';
+        }, i * 100);
+      }
+    });
+  }, { threshold: 0.05 });
+
+  document.querySelectorAll('.feature-card').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(30px)';
+    el.style.transition = 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.23,1,0.32,1)';
+    cardObserver.observe(el);
+  });
+
+  /* ── Pipeline stage hover glow ── */
+  document.querySelectorAll('.pipeline-stage').forEach(stage => {
+    stage.addEventListener('mouseenter', () => {
+      stage.style.borderColor = 'rgba(99,179,237,0.5)';
+      stage.style.boxShadow = '0 8px 30px rgba(99,179,237,0.15)';
+    });
+    stage.addEventListener('mouseleave', () => {
+      stage.style.borderColor = '';
+      stage.style.boxShadow = '';
+    });
+  });
+
+  /* ── Meter animation on scroll ── */
+  const meterObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.querySelectorAll('.meter-fill').forEach(fill => {
+          fill.style.animation = 'none';
+          void fill.offsetWidth; // reflow
+          fill.style.animation = 'fill-meter 1.5s ease-out forwards';
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+
+  document.querySelectorAll('.ml-pipeline-full').forEach(el => meterObserver.observe(el));
+
+  /* ── Active nav link ── */
+  const sections = document.querySelectorAll('[id]');
+  const navLinks = document.querySelectorAll('.nav-links a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    sections.forEach(section => {
+      if (window.scrollY >= section.offsetTop - 120) current = section.id;
+    });
+    navLinks.forEach(link => {
+      link.style.color = link.getAttribute('href') === `#${current}` ? '#63b3ed' : '';
+    });
+  });
+</script>
+
+</body>
+</html>
