@@ -3,1905 +3,2171 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Second Chance — AI System Design</title>
+<title>Adaptive Learning Engine — Complete Workflow</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
 <style>
-  /* ─── Base Reset ─── */
-  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
   :root {
-    --bg: #060b18;
-    --surface: #0d1526;
-    --surface2: #131d33;
-    --border: rgba(99,179,237,0.15);
-    --accent: #63b3ed;
-    --accent2: #9f7aea;
-    --accent3: #48bb78;
-    --accent4: #f6ad55;
-    --accent5: #fc8181;
-    --text: #e2e8f0;
-    --muted: #718096;
-    --glow: rgba(99,179,237,0.25);
-    --glow2: rgba(159,122,234,0.25);
-    --glow3: rgba(72,187,120,0.25);
-    --glow4: rgba(246,173,85,0.25);
-    --glow5: rgba(252,129,129,0.25);
+    --bg:        #07091a;
+    --bg2:       #0d1225;
+    --card:      #111827;
+    --card2:     #1a2235;
+    --border:    #1e2d4a;
+    --blue:      #3b82f6;
+    --indigo:    #6366f1;
+    --purple:    #8b5cf6;
+    --amber:     #f59e0b;
+    --green:     #10b981;
+    --pink:      #ec4899;
+    --red:       #ef4444;
+    --cyan:      #06b6d4;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --mono:      'JetBrains Mono', monospace;
   }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
   html { scroll-behavior: smooth; }
 
   body {
+    font-family: 'Inter', sans-serif;
     background: var(--bg);
     color: var(--text);
-    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-    line-height: 1.6;
     overflow-x: hidden;
   }
 
-  /* ─── Animated Background ─── */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background:
-      radial-gradient(ellipse 80vw 60vh at 10% 20%, rgba(99,179,237,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 60vw 80vh at 90% 80%, rgba(159,122,234,0.06) 0%, transparent 60%),
-      radial-gradient(ellipse 50vw 50vh at 50% 50%, rgba(72,187,120,0.03) 0%, transparent 60%);
+  /* ─── CANVAS BACKGROUND ─── */
+  #hero-canvas {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     pointer-events: none;
     z-index: 0;
   }
 
-  /* ─── Floating Particles ─── */
-  .particles {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
+  /* ─── HERO ─── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 2rem;
     overflow: hidden;
   }
 
-  .particle {
-    position: absolute;
-    border-radius: 50%;
-    animation: float-particle linear infinite;
-    opacity: 0;
-  }
-
-  @keyframes float-particle {
-    0%   { transform: translateY(100vh) translateX(0) scale(0); opacity: 0; }
-    10%  { opacity: 1; }
-    90%  { opacity: 1; }
-    100% { transform: translateY(-10vh) translateX(var(--drift)) scale(1); opacity: 0; }
-  }
-
-  /* ─── Grid Lines ─── */
-  .grid-bg {
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background-image:
-      linear-gradient(rgba(99,179,237,0.04) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(99,179,237,0.04) 1px, transparent 1px);
-    background-size: 60px 60px;
-    animation: grid-drift 20s linear infinite;
-  }
-
-  @keyframes grid-drift {
-    0%   { transform: translateY(0); }
-    100% { transform: translateY(60px); }
-  }
-
-  /* ─── Layout ─── */
-  .container {
-    position: relative;
-    z-index: 1;
-    max-width: 1400px;
-    margin: 0 auto;
-    padding: 0 2rem 4rem;
-  }
-
-  /* ─── Hero Header ─── */
-  .hero {
-    text-align: center;
-    padding: 6rem 2rem 4rem;
-    position: relative;
-  }
+  .hero-content { position: relative; z-index: 1; }
 
   .hero-badge {
-    display: inline-block;
-    padding: 0.4rem 1.2rem;
-    background: linear-gradient(135deg, rgba(99,179,237,0.2), rgba(159,122,234,0.2));
-    border: 1px solid rgba(99,179,237,0.4);
-    border-radius: 999px;
-    font-size: 0.75rem;
-    letter-spacing: 0.15em;
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    background: rgba(99,102,241,.15);
+    border: 1px solid rgba(99,102,241,.4);
+    color: var(--indigo);
+    padding: .35rem 1rem;
+    border-radius: 99px;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .08em;
     text-transform: uppercase;
-    color: var(--accent);
     margin-bottom: 1.5rem;
-    animation: badge-pulse 3s ease-in-out infinite;
-  }
-
-  @keyframes badge-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(99,179,237,0.3); }
-    50%       { box-shadow: 0 0 0 8px rgba(99,179,237,0); }
+    animation: fadeDown .8s ease both;
   }
 
   .hero h1 {
     font-size: clamp(2.5rem, 6vw, 5rem);
-    font-weight: 800;
-    letter-spacing: -0.02em;
-    background: linear-gradient(135deg, #e2e8f0 30%, #63b3ed 60%, #9f7aea 100%);
+    font-weight: 900;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+    animation: fadeDown .8s .1s ease both;
+  }
+
+  .grad-text {
+    background: linear-gradient(135deg, var(--blue), var(--purple), var(--pink));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
-    margin-bottom: 0.5rem;
-    animation: hero-enter 1s ease-out both;
   }
 
-  .hero-sub {
-    font-size: clamp(1rem, 2vw, 1.3rem);
+  .hero p {
+    font-size: clamp(1rem, 2vw, 1.25rem);
     color: var(--muted);
-    max-width: 700px;
-    margin: 0 auto 3rem;
-    animation: hero-enter 1s 0.2s ease-out both;
+    max-width: 640px;
+    margin: 0 auto 2.5rem;
+    line-height: 1.7;
+    animation: fadeDown .8s .2s ease both;
   }
 
-  @keyframes hero-enter {
-    from { opacity: 0; transform: translateY(20px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  /* ─── Stats Row ─── */
-  .stats-row {
+  .hero-pills {
     display: flex;
+    gap: .75rem;
     justify-content: center;
-    gap: 2rem;
     flex-wrap: wrap;
-    margin-bottom: 4rem;
-    animation: hero-enter 1s 0.4s ease-out both;
+    margin-bottom: 3rem;
+    animation: fadeDown .8s .3s ease both;
   }
 
-  .stat-item {
-    text-align: center;
+  .pill {
+    padding: .4rem .9rem;
+    border-radius: 99px;
+    font-size: .8rem;
+    font-weight: 600;
+    border: 1px solid;
   }
+  .pill-blue   { background: rgba(59,130,246,.1);  border-color: rgba(59,130,246,.3);  color: var(--blue);   }
+  .pill-indigo { background: rgba(99,102,241,.1);  border-color: rgba(99,102,241,.3);  color: var(--indigo); }
+  .pill-amber  { background: rgba(245,158,11,.1);  border-color: rgba(245,158,11,.3);  color: var(--amber);  }
+  .pill-green  { background: rgba(16,185,129,.1);  border-color: rgba(16,185,129,.3);  color: var(--green);  }
+  .pill-pink   { background: rgba(236,72,153,.1);  border-color: rgba(236,72,153,.3);  color: var(--pink);   }
 
-  .stat-num {
-    font-size: 2rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .simulate-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    background: linear-gradient(135deg, var(--indigo), var(--purple));
+    color: #fff;
+    border: none;
+    padding: .9rem 2rem;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    animation: fadeDown .8s .4s ease both, pulse-glow 3s 1.5s ease infinite;
+    transition: transform .2s, box-shadow .2s;
+    letter-spacing: .02em;
   }
+  .simulate-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 12px 40px rgba(99,102,241,.5); }
+  .simulate-btn:active { transform: scale(.97); }
 
-  .stat-label {
-    font-size: 0.78rem;
+  .scroll-hint {
+    position: absolute;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: .4rem;
     color: var(--muted);
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
+    font-size: .75rem;
+    animation: bounce 2s ease infinite;
+    z-index: 1;
+  }
+  .scroll-hint svg { width: 20px; height: 20px; }
+
+  /* ─── SECTION BASE ─── */
+  section {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 5rem 2rem;
   }
 
-  /* ─── Section Headers ─── */
-  .section-header {
-    text-align: center;
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: .75rem;
+  }
+  .section-label span { display: inline-block; width: 28px; height: 2px; background: currentColor; border-radius: 2px; }
+
+  .section-title {
+    font-size: clamp(1.8rem, 3.5vw, 2.8rem);
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 1rem;
+  }
+
+  .section-sub {
+    color: var(--muted);
+    font-size: 1.05rem;
+    line-height: 1.7;
+    max-width: 640px;
     margin-bottom: 3rem;
   }
 
-  .section-header h2 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.5rem;
-  }
-
-  .section-header p {
-    color: var(--muted);
-    font-size: 0.95rem;
-  }
-
-  .section-divider {
-    width: 60px;
-    height: 3px;
-    background: linear-gradient(90deg, var(--accent), var(--accent2));
-    border-radius: 99px;
-    margin: 1rem auto 0;
-  }
-
-  /* ─── Overall Flow Diagram ─── */
-  .overall-flow {
-    background: var(--surface);
+  /* ─── PIPELINE OVERVIEW ─── */
+  .pipeline-container {
+    background: var(--card);
     border: 1px solid var(--border);
     border-radius: 20px;
     padding: 3rem 2rem;
-    margin-bottom: 5rem;
+    overflow-x: auto;
     position: relative;
-    overflow: hidden;
-    animation: card-enter 0.8s 0.2s ease-out both;
   }
 
-  .overall-flow::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-    animation: shimmer 3s linear infinite;
-  }
-
-  @keyframes shimmer {
-    0%   { background-position: -200% center; }
-    100% { background-position: 200% center; }
-  }
-
-  .flow-row {
+  .pipeline-row {
     display: flex;
     align-items: center;
     justify-content: center;
     gap: 0;
-    flex-wrap: wrap;
-    margin: 1.5rem 0;
+    min-width: 800px;
   }
 
-  .flow-node {
+  .pipe-node {
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1rem 1.4rem;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    min-width: 140px;
-    text-align: center;
-    position: relative;
-    transition: all 0.3s;
+    gap: .6rem;
     cursor: default;
+    flex-shrink: 0;
   }
 
-  .flow-node:hover {
-    transform: translateY(-4px);
-    border-color: var(--accent);
-    box-shadow: 0 8px 30px var(--glow);
-  }
-
-  .flow-node .node-icon {
-    font-size: 1.8rem;
-    margin-bottom: 0.4rem;
-  }
-
-  .flow-node .node-title {
-    font-size: 0.75rem;
-    font-weight: 600;
-    color: var(--text);
-    letter-spacing: 0.03em;
-  }
-
-  .flow-node .node-sub {
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-top: 0.2rem;
-  }
-
-  .flow-arrow {
-    display: flex;
-    align-items: center;
-    padding: 0 0.5rem;
-    color: var(--accent);
-    font-size: 1.5rem;
-    animation: arrow-pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes arrow-pulse {
-    0%, 100% { opacity: 0.4; transform: translateX(0); }
-    50%       { opacity: 1; transform: translateX(4px); }
-  }
-
-  .flow-down-arrow {
-    display: flex;
-    justify-content: center;
-    color: var(--accent2);
-    font-size: 1.5rem;
-    margin: 0.5rem 0;
-    animation: arrow-down-pulse 1.5s ease-in-out infinite;
-  }
-
-  @keyframes arrow-down-pulse {
-    0%, 100% { opacity: 0.4; transform: translateY(0); }
-    50%       { opacity: 1; transform: translateY(4px); }
-  }
-
-  /* ─── Feature Cards ─── */
-  .features-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 2rem;
-    margin-bottom: 5rem;
-  }
-
-  @media (max-width: 900px) {
-    .features-grid { grid-template-columns: 1fr; }
-  }
-
-  .feature-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    overflow: hidden;
-    position: relative;
-    transition: all 0.4s cubic-bezier(0.23, 1, 0.32, 1);
-    animation: card-enter 0.8s ease-out both;
-  }
-
-  @keyframes card-enter {
-    from { opacity: 0; transform: translateY(30px); }
-    to   { opacity: 1; transform: translateY(0); }
-  }
-
-  .feature-card:nth-child(1) { animation-delay: 0.1s; }
-  .feature-card:nth-child(2) { animation-delay: 0.2s; }
-  .feature-card:nth-child(3) { animation-delay: 0.3s; }
-  .feature-card:nth-child(4) { animation-delay: 0.4s; }
-
-  .feature-card:hover {
-    transform: translateY(-6px);
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  }
-
-  .feature-card:hover .card-glow { opacity: 1; }
-
-  .card-glow {
-    position: absolute;
-    inset: 0;
-    border-radius: 20px;
-    opacity: 0;
-    transition: opacity 0.4s;
-    pointer-events: none;
-  }
-
-  .card-header {
-    padding: 2rem 2rem 1.5rem;
-    border-bottom: 1px solid var(--border);
-    position: relative;
-  }
-
-  .card-accent-bar {
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 3px;
-    border-radius: 20px 20px 0 0;
-  }
-
-  .card-icon-wrap {
-    width: 52px;
-    height: 52px;
-    border-radius: 14px;
+  .pipe-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 1.6rem;
-    margin-bottom: 1rem;
+    transition: transform .3s, box-shadow .3s;
+    position: relative;
+  }
+  .pipe-node:hover .pipe-icon { transform: scale(1.12); }
+
+  .pipe-icon.active {
+    animation: node-pulse 1s ease;
   }
 
-  .card-number {
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    margin-bottom: 0.3rem;
-  }
-
-  .card-title {
-    font-size: 1.25rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .card-subtitle {
-    font-size: 0.82rem;
+  .pipe-label {
+    font-size: .72rem;
+    font-weight: 600;
+    text-align: center;
     color: var(--muted);
+    max-width: 80px;
+    line-height: 1.3;
   }
 
-  .card-body {
-    padding: 1.5rem 2rem 2rem;
-  }
-
-  /* ─── Pipeline Steps ─── */
-  .pipeline {
-    margin: 1.2rem 0;
-  }
-
-  .pipeline-title {
-    font-size: 0.68rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.8rem;
+  .pipe-arrow {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    flex-shrink: 0;
+    width: 50px;
+    position: relative;
+    margin-bottom: 1.5rem;
   }
 
-  .pipeline-title::after {
+  .arrow-line {
+    width: 100%;
+    height: 2px;
+    background: var(--border);
+    position: relative;
+    overflow: hidden;
+  }
+  .arrow-line::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--blue), transparent);
+  }
+  .arrow-line.flowing::after {
+    animation: flow-line 1.5s linear infinite;
+  }
+
+  .arrow-head {
+    width: 0; height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--border);
+    flex-shrink: 0;
+  }
+
+  .icon-blue   { background: rgba(59,130,246,.15);  box-shadow: 0 0 0 1px rgba(59,130,246,.3);  }
+  .icon-indigo { background: rgba(99,102,241,.15);  box-shadow: 0 0 0 1px rgba(99,102,241,.3);  }
+  .icon-amber  { background: rgba(245,158,11,.15);  box-shadow: 0 0 0 1px rgba(245,158,11,.3);  }
+  .icon-green  { background: rgba(16,185,129,.15);  box-shadow: 0 0 0 1px rgba(16,185,129,.3);  }
+  .icon-pink   { background: rgba(236,72,153,.15);  box-shadow: 0 0 0 1px rgba(236,72,153,.3);  }
+  .icon-cyan   { background: rgba(6,182,212,.15);   box-shadow: 0 0 0 1px rgba(6,182,212,.3);   }
+  .icon-purple { background: rgba(139,92,246,.15);  box-shadow: 0 0 0 1px rgba(139,92,246,.3);  }
+
+  /* ─── STEP CARDS ─── */
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+  @media(max-width:768px) { .step-grid { grid-template-columns: 1fr; } }
+
+  .step-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 2rem;
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity .6s ease, transform .6s ease;
+  }
+  .step-card.visible { opacity: 1; transform: translateY(0); }
+  .step-card.full-width { grid-column: 1 / -1; }
+
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .step-num {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: .8rem;
+    font-weight: 800;
+    flex-shrink: 0;
+  }
+
+  .step-card h3 {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+  .step-card .step-desc {
+    font-size: .85rem;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  /* ─── EVENT LOG ─── */
+  .event-log {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1rem;
+    height: 180px;
+    overflow: hidden;
+    position: relative;
+  }
+  .event-row {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    padding: .35rem 0;
+    font-size: .78rem;
+    font-family: var(--mono);
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    animation: slideInLeft .3s ease both;
+  }
+  .event-dot { width: 7px; height: 7px; border-radius: 50%; flex-shrink: 0; }
+  .ev-green { background: var(--green); }
+  .ev-red   { background: var(--red); }
+  .ev-amber { background: var(--amber); }
+
+  /* ─── MODEL 1: SKILL BARS ─── */
+  .skill-grid {
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+    margin-top: 1rem;
+  }
+
+  .skill-row {
+    display: grid;
+    grid-template-columns: 160px 1fr 56px;
+    align-items: center;
+    gap: .75rem;
+  }
+
+  .skill-name {
+    font-size: .78rem;
+    font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .skill-bar-bg {
+    height: 10px;
+    background: var(--bg);
+    border-radius: 99px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+
+  .skill-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 1.2s cubic-bezier(.22,1,.36,1);
+  }
+
+  .skill-prob {
+    font-family: var(--mono);
+    font-size: .75rem;
+    font-weight: 600;
+    text-align: right;
+  }
+
+  .bar-low       { background: linear-gradient(90deg, #ef4444, #f97316); }
+  .bar-developing{ background: linear-gradient(90deg, #f59e0b, #eab308); }
+  .bar-high      { background: linear-gradient(90deg, #10b981, #06b6d4); }
+
+  .mastery-badge {
+    display: inline-block;
+    padding: .15rem .5rem;
+    border-radius: 6px;
+    font-size: .65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .06em;
+  }
+  .badge-low       { background: rgba(239,68,68,.15);  color: #ef4444; }
+  .badge-developing{ background: rgba(245,158,11,.15); color: #f59e0b; }
+  .badge-high      { background: rgba(16,185,129,.15); color: #10b981; }
+
+  /* ─── MODEL 2: ENGAGEMENT ─── */
+  .engagement-viz {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+  }
+
+  .gauge-container {
+    position: relative;
+    width: 220px;
+    height: 130px;
+  }
+
+  #gauge-canvas { width: 100%; }
+
+  .gauge-label {
+    position: absolute;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+  }
+  .gauge-state {
+    font-size: 1.4rem;
+    font-weight: 800;
+    display: block;
+  }
+  .gauge-sub { font-size: .72rem; color: var(--muted); }
+
+  .prob-bars-eng {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: .6rem;
+  }
+
+  .eng-row {
+    display: grid;
+    grid-template-columns: 90px 1fr 54px;
+    align-items: center;
+    gap: .75rem;
+  }
+  .eng-label { font-size: .78rem; font-weight: 600; }
+  .eng-bar-bg {
+    height: 8px;
+    background: var(--bg);
+    border-radius: 99px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+  }
+  .eng-bar-fill {
+    height: 100%;
+    border-radius: 99px;
+    width: 0%;
+    transition: width 1s cubic-bezier(.22,1,.36,1);
+  }
+  .eng-prob { font-family: var(--mono); font-size: .75rem; font-weight: 600; text-align: right; }
+
+  /* ─── FORMULA ENGINE ─── */
+  .formula-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1rem;
+  }
+
+  .formula-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.2rem;
+    opacity: 0;
+    transform: scale(.95);
+    transition: opacity .5s ease, transform .5s ease, border-color .3s, box-shadow .3s;
+  }
+  .formula-card.lit {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .formula-card.active-rule {
+    border-color: var(--green);
+    box-shadow: 0 0 20px rgba(16,185,129,.25);
+  }
+
+  .formula-condition {
+    font-family: var(--mono);
+    font-size: .78rem;
+    color: var(--amber);
+    margin-bottom: .5rem;
+    display: block;
+  }
+
+  .formula-action {
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: .4rem;
+  }
+
+  .formula-why { font-size: .75rem; color: var(--muted); line-height: 1.5; }
+
+  /* ─── OUTPUT CARDS ─── */
+  .output-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.2rem;
+  }
+  @media(max-width:900px) { .output-grid { grid-template-columns: 1fr 1fr; } }
+  @media(max-width:600px) { .output-grid { grid-template-columns: 1fr; } }
+
+  .output-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .output-card.visible { opacity: 1; transform: translateY(0); }
+
+  .output-header {
+    padding: .9rem 1.2rem;
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    border-bottom: 1px solid var(--border);
+  }
+  .output-header-icon { font-size: 1.1rem; }
+  .output-header-title { font-size: .85rem; font-weight: 700; }
+  .output-header-badge {
+    margin-left: auto;
+    font-size: .65rem;
+    font-weight: 700;
+    padding: .15rem .5rem;
+    border-radius: 6px;
+    text-transform: uppercase;
+  }
+
+  .json-viewer {
+    padding: 1rem;
+    font-family: var(--mono);
+    font-size: .73rem;
+    line-height: 1.7;
+    max-height: 200px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--border) transparent;
+  }
+
+  .j-key   { color: #7dd3fc; }
+  .j-str   { color: #86efac; }
+  .j-num   { color: #fde68a; }
+  .j-bool  { color: #f9a8d4; }
+  .j-null  { color: var(--muted); }
+  .j-punc  { color: var(--muted); }
+
+  /* ─── FLOW DIVIDERS ─── */
+  .flow-divider {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin: 0 auto 4rem;
+    max-width: 1200px;
+    padding: 0 2rem;
+    color: var(--muted);
+    font-size: .8rem;
+  }
+  .flow-divider::before, .flow-divider::after {
     content: '';
     flex: 1;
     height: 1px;
     background: var(--border);
   }
 
-  .pipeline-steps {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+  /* ─── FEATURE TABLE ─── */
+  .feat-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .82rem;
+  }
+  .feat-table th {
+    background: var(--bg);
+    padding: .6rem 1rem;
+    text-align: left;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .feat-table td {
+    padding: .6rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+  }
+  .feat-table tr:hover td { background: rgba(255,255,255,.02); }
+  .feat-val {
+    font-family: var(--mono);
+    color: var(--amber);
+    font-size: .78rem;
   }
 
-  .step {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.8rem;
+  /* ─── TIMELINE ─── */
+  .timeline {
     position: relative;
-    padding-bottom: 0.6rem;
+    padding-left: 2.5rem;
   }
-
-  .step:not(:last-child)::before {
+  .timeline::before {
     content: '';
     position: absolute;
-    left: 14px;
-    top: 28px;
-    bottom: 0;
+    left: .7rem;
+    top: 0; bottom: 0;
     width: 2px;
-    background: linear-gradient(to bottom, var(--step-color, var(--accent)), transparent);
-    opacity: 0.3;
+    background: linear-gradient(180deg, var(--indigo), var(--purple), var(--pink));
   }
 
-  .step-dot {
-    width: 28px;
-    height: 28px;
+  .timeline-item {
+    position: relative;
+    margin-bottom: 2rem;
+    opacity: 0;
+    transform: translateX(20px);
+    transition: opacity .5s ease, transform .5s ease;
+  }
+  .timeline-item.visible { opacity: 1; transform: translateX(0); }
+
+  .timeline-dot {
+    position: absolute;
+    left: -2.1rem;
+    top: .2rem;
+    width: 14px; height: 14px;
     border-radius: 50%;
-    background: var(--step-color, var(--accent));
+    border: 2px solid var(--indigo);
+    background: var(--bg);
+    box-shadow: 0 0 10px rgba(99,102,241,.5);
+  }
+  .timeline-dot.amber { border-color: var(--amber); box-shadow: 0 0 10px rgba(245,158,11,.5); }
+  .timeline-dot.green { border-color: var(--green); box-shadow: 0 0 10px rgba(16,185,129,.5); }
+
+  .timeline-title { font-size: .9rem; font-weight: 700; margin-bottom: .3rem; }
+  .timeline-body { font-size: .82rem; color: var(--muted); line-height: 1.6; }
+  .timeline-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: .7rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    padding: .1rem .5rem;
+    border-radius: 6px;
+    margin-bottom: .4rem;
+    color: var(--cyan);
+  }
+
+  /* ─── LIVE SIM ─── */
+  .sim-section {
+    background: linear-gradient(135deg, rgba(99,102,241,.08), rgba(236,72,153,.08));
+    border: 1px solid rgba(99,102,241,.2);
+    border-radius: 24px;
+    padding: 4rem 2rem;
+    text-align: center;
+    margin: 0 2rem 5rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .sim-pipeline {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #fff;
-    flex-shrink: 0;
-    box-shadow: 0 0 10px var(--step-glow, var(--glow));
-    animation: dot-pulse 2s ease-in-out infinite;
-  }
-
-  @keyframes dot-pulse {
-    0%, 100% { box-shadow: 0 0 0 0 var(--step-glow, var(--glow)); }
-    50%       { box-shadow: 0 0 0 5px transparent; }
-  }
-
-  .step-content { flex: 1; }
-
-  .step-name {
-    font-size: 0.8rem;
-    font-weight: 600;
-    color: var(--text);
-    margin-bottom: 0.1rem;
-  }
-
-  .step-desc {
-    font-size: 0.72rem;
-    color: var(--muted);
-    line-height: 1.4;
-  }
-
-  /* ─── Tech Tags ─── */
-  .tech-tags {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.4rem;
-    margin-top: 1.2rem;
-  }
-
-  .tag {
-    padding: 0.2rem 0.7rem;
-    border-radius: 999px;
-    font-size: 0.67rem;
-    font-weight: 600;
-    letter-spacing: 0.04em;
-    border: 1px solid;
-  }
-
-  /* ─── Output Block ─── */
-  .output-block {
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 1rem;
-    margin-top: 1.2rem;
-    font-family: 'Consolas', 'Courier New', monospace;
-  }
-
-  .output-label {
-    font-size: 0.62rem;
-    color: var(--muted);
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    margin-bottom: 0.5rem;
-  }
-
-  .output-field {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin: 0.3rem 0;
-    font-size: 0.72rem;
-  }
-
-  .output-key {
-    color: var(--accent2);
-    font-weight: 600;
-  }
-
-  .output-colon { color: var(--muted); }
-
-  .output-val {
-    color: var(--accent3);
-  }
-
-  /* ─── ML Pipeline Full View ─── */
-  .ml-pipeline-full {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    margin-bottom: 5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .ml-pipeline-full::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, var(--accent3), var(--accent), var(--accent2), var(--accent4));
-    animation: shimmer 4s linear infinite;
-    background-size: 200%;
-  }
-
-  .pipeline-row {
-    display: flex;
-    align-items: stretch;
     gap: 0;
+    flex-wrap: nowrap;
     overflow-x: auto;
-    padding-bottom: 0.5rem;
-    scrollbar-width: thin;
-    scrollbar-color: var(--border) transparent;
+    padding: 2rem 0 1rem;
+    margin: 0 auto;
   }
 
-  .pipeline-stage {
-    flex: 1;
-    min-width: 160px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.2rem 1rem;
-    position: relative;
-    transition: all 0.3s;
-  }
-
-  .pipeline-stage:hover {
-    transform: translateY(-4px);
-    z-index: 1;
-  }
-
-  .pipeline-connector {
+  .sim-node {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    padding: 0 0.3rem;
-    color: var(--accent);
-    font-size: 1.2rem;
+    gap: .4rem;
     flex-shrink: 0;
-    animation: arrow-pulse 2s ease-in-out infinite;
   }
 
-  .stage-label {
-    font-size: 0.6rem;
-    font-weight: 700;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-bottom: 0.5rem;
-  }
-
-  .stage-name {
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .stage-models {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .stage-model {
-    font-size: 0.68rem;
-    color: var(--muted);
-    background: rgba(0,0,0,0.2);
-    padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    border-left: 2px solid;
-  }
-
-  /* ─── Tech Stack ─── */
-  .tech-stack {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    margin-bottom: 5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .tech-stack::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent2), var(--accent4), transparent);
-  }
-
-  .tech-categories {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  .tech-category {
-    background: var(--surface2);
-    border: 1px solid var(--border);
+  .sim-icon {
+    width: 56px; height: 56px;
     border-radius: 14px;
-    padding: 1.5rem;
-    transition: all 0.3s;
-  }
-
-  .tech-category:hover {
-    border-color: var(--accent);
-    box-shadow: 0 4px 20px var(--glow);
-    transform: translateY(-3px);
-  }
-
-  .tech-cat-icon { font-size: 1.4rem; margin-bottom: 0.6rem; }
-  .tech-cat-name {
-    font-size: 0.78rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.8rem;
-  }
-
-  .tech-items {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-  }
-
-  .tech-item {
-    font-size: 0.68rem;
-    padding: 0.2rem 0.6rem;
-    background: rgba(0,0,0,0.3);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    color: var(--muted);
-  }
-
-  /* ─── Data Flow Diagram ─── */
-  .data-flow {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    padding: 3rem 2rem;
-    margin-bottom: 5rem;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .data-flow::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent5), var(--accent3), transparent);
-  }
-
-  .df-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 1.5rem;
-    margin-top: 1rem;
-  }
-
-  @media (max-width: 768px) {
-    .df-grid { grid-template-columns: 1fr; }
-  }
-
-  .df-box {
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 14px;
-    padding: 1.5rem;
-    transition: all 0.3s;
-    position: relative;
-  }
-
-  .df-box:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 30px rgba(0,0,0,0.3);
-  }
-
-  .df-box-icon { font-size: 1.6rem; margin-bottom: 0.6rem; }
-  .df-box-title {
-    font-size: 0.88rem;
-    font-weight: 700;
-    color: var(--text);
-    margin-bottom: 0.4rem;
-  }
-
-  .df-box-items {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.3rem;
-    margin-top: 0.5rem;
-  }
-
-  .df-box-items li {
-    font-size: 0.72rem;
-    color: var(--muted);
     display: flex;
     align-items: center;
-    gap: 0.4rem;
+    justify-content: center;
+    font-size: 1.4rem;
+    border: 2px solid var(--border);
+    transition: border-color .3s, box-shadow .3s, transform .3s;
+    position: relative;
   }
 
-  .df-box-items li::before {
-    content: '→';
-    color: var(--accent);
-    font-size: 0.75rem;
+  .sim-icon.processing {
+    border-color: var(--indigo);
+    box-shadow: 0 0 20px rgba(99,102,241,.5);
+    animation: node-pulse 1s ease infinite;
+  }
+  .sim-icon.done {
+    border-color: var(--green);
+    box-shadow: 0 0 16px rgba(16,185,129,.4);
+    transform: scale(1.08);
   }
 
-  /* ─── Feature Colors ─── */
-  /* Feature 1 – Community (blue) */
-  .f1 { --fc: #63b3ed; --fg: rgba(99,179,237,0.2); --fgs: rgba(99,179,237,0.3); }
-  /* Feature 2 – Diet (green) */
-  .f2 { --fc: #48bb78; --fg: rgba(72,187,120,0.2); --fgs: rgba(72,187,120,0.3); }
-  /* Feature 3 – Recovery (purple) */
-  .f3 { --fc: #9f7aea; --fg: rgba(159,122,234,0.2); --fgs: rgba(159,122,234,0.3); }
-  /* Feature 4 – Emergency (red/orange) */
-  .f4 { --fc: #fc8181; --fg: rgba(252,129,129,0.2); --fgs: rgba(252,129,129,0.3); }
+  .sim-label { font-size: .68rem; color: var(--muted); font-weight: 600; max-width: 70px; text-align: center; }
 
-  .feature-card.f1 .card-accent-bar { background: linear-gradient(90deg, #63b3ed, #4299e1); }
-  .feature-card.f2 .card-accent-bar { background: linear-gradient(90deg, #48bb78, #38a169); }
-  .feature-card.f3 .card-accent-bar { background: linear-gradient(90deg, #9f7aea, #805ad5); }
-  .feature-card.f4 .card-accent-bar { background: linear-gradient(90deg, #fc8181, #f6ad55); }
+  .sim-arrow {
+    width: 36px;
+    height: 2px;
+    background: var(--border);
+    flex-shrink: 0;
+    margin-bottom: 1.2rem;
+    position: relative;
+    overflow: hidden;
+  }
+  .sim-arrow::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, var(--green));
+  }
+  .sim-arrow.active::after { animation: flow-line .8s ease forwards; }
 
-  .feature-card.f1 .card-icon-wrap { background: rgba(99,179,237,0.15); }
-  .feature-card.f2 .card-icon-wrap { background: rgba(72,187,120,0.15); }
-  .feature-card.f3 .card-icon-wrap { background: rgba(159,122,234,0.15); }
-  .feature-card.f4 .card-icon-wrap { background: rgba(252,129,129,0.15); }
+  .sim-log {
+    max-height: 120px;
+    overflow-y: auto;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: .8rem 1rem;
+    text-align: left;
+    margin: 1.5rem auto 0;
+    max-width: 600px;
+  }
+  .sim-log-entry {
+    font-family: var(--mono);
+    font-size: .75rem;
+    padding: .2rem 0;
+    animation: slideInLeft .3s ease both;
+  }
+  .log-ts  { color: var(--muted); }
+  .log-ok  { color: var(--green); }
+  .log-ml  { color: var(--indigo); }
+  .log-fmt { color: var(--amber); }
+  .log-out { color: var(--pink); }
 
-  .feature-card.f1 .card-number { color: #63b3ed; }
-  .feature-card.f2 .card-number { color: #48bb78; }
-  .feature-card.f3 .card-number { color: #9f7aea; }
-  .feature-card.f4 .card-number { color: #fc8181; }
-
-  .feature-card.f1 .card-glow { background: radial-gradient(ellipse at top left, rgba(99,179,237,0.08) 0%, transparent 70%); }
-  .feature-card.f2 .card-glow { background: radial-gradient(ellipse at top left, rgba(72,187,120,0.08) 0%, transparent 70%); }
-  .feature-card.f3 .card-glow { background: radial-gradient(ellipse at top left, rgba(159,122,234,0.08) 0%, transparent 70%); }
-  .feature-card.f4 .card-glow { background: radial-gradient(ellipse at top left, rgba(252,129,129,0.08) 0%, transparent 70%); }
-
-  /* Step colors per feature */
-  .f1 .step-dot { --step-color: #63b3ed; --step-glow: rgba(99,179,237,0.4); background: #63b3ed; }
-  .f2 .step-dot { --step-color: #48bb78; --step-glow: rgba(72,187,120,0.4); background: #48bb78; }
-  .f3 .step-dot { --step-color: #9f7aea; --step-glow: rgba(159,122,234,0.4); background: #9f7aea; }
-  .f4 .step-dot { --step-color: #fc8181; --step-glow: rgba(252,129,129,0.4); background: #fc8181; }
-
-  .f1 .step:not(:last-child)::before { background: linear-gradient(to bottom, #63b3ed, transparent); }
-  .f2 .step:not(:last-child)::before { background: linear-gradient(to bottom, #48bb78, transparent); }
-  .f3 .step:not(:last-child)::before { background: linear-gradient(to bottom, #9f7aea, transparent); }
-  .f4 .step:not(:last-child)::before { background: linear-gradient(to bottom, #fc8181, transparent); }
-
-  /* Tags */
-  .tag.blue  { background: rgba(99,179,237,0.15);  border-color: rgba(99,179,237,0.4);  color: #63b3ed; }
-  .tag.green { background: rgba(72,187,120,0.15);  border-color: rgba(72,187,120,0.4);  color: #48bb78; }
-  .tag.purple{ background: rgba(159,122,234,0.15); border-color: rgba(159,122,234,0.4); color: #9f7aea; }
-  .tag.red   { background: rgba(252,129,129,0.15); border-color: rgba(252,129,129,0.4); color: #fc8181; }
-  .tag.orange{ background: rgba(246,173,85,0.15);  border-color: rgba(246,173,85,0.4);  color: #f6ad55; }
-  .tag.gray  { background: rgba(113,128,150,0.15); border-color: rgba(113,128,150,0.4); color: #a0aec0; }
-
-  /* Stage colors */
-  .s-blue  { border-left-color: #63b3ed; }
-  .s-green { border-left-color: #48bb78; }
-  .s-purple{ border-left-color: #9f7aea; }
-  .s-red   { border-left-color: #fc8181; }
-  .s-orange{ border-left-color: #f6ad55; }
-
-  /* ─── Feature Node Colors in Overall Flow ─── */
-  .fn-blue   { border-color: rgba(99,179,237,0.5); background: rgba(99,179,237,0.08); }
-  .fn-green  { border-color: rgba(72,187,120,0.5); background: rgba(72,187,120,0.08); }
-  .fn-purple { border-color: rgba(159,122,234,0.5); background: rgba(159,122,234,0.08); }
-  .fn-red    { border-color: rgba(252,129,129,0.5); background: rgba(252,129,129,0.08); }
-  .fn-orange { border-color: rgba(246,173,85,0.5); background: rgba(246,173,85,0.08); }
-  .fn-gray   { border-color: rgba(113,128,150,0.4); background: rgba(113,128,150,0.06); }
-
-  /* ─── Footer ─── */
-  .footer {
+  /* ─── FOOTER ─── */
+  footer {
     text-align: center;
-    padding: 3rem 0 2rem;
+    padding: 3rem 2rem;
     color: var(--muted);
-    font-size: 0.8rem;
+    font-size: .82rem;
     border-top: 1px solid var(--border);
   }
+  footer strong { color: var(--text); }
 
-  .footer-logo {
-    font-size: 1.5rem;
-    font-weight: 800;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    margin-bottom: 0.5rem;
+  /* ─── ANIMATIONS ─── */
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes slideInLeft {
+    from { opacity: 0; transform: translateX(-16px); }
+    to   { opacity: 1; transform: translateX(0); }
+  }
+  @keyframes bounce {
+    0%,100% { transform: translateX(-50%) translateY(0); }
+    50%      { transform: translateX(-50%) translateY(8px); }
+  }
+  @keyframes pulse-glow {
+    0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    50%      { box-shadow: 0 0 30px 6px rgba(99,102,241,.4); }
+  }
+  @keyframes flow-line {
+    from { left: -100%; }
+    to   { left: 100%; }
+  }
+  @keyframes node-pulse {
+    0%,100% { box-shadow: 0 0 0 0 rgba(99,102,241,0); }
+    50%      { box-shadow: 0 0 24px 6px rgba(99,102,241,.5); }
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
   }
 
-  /* ─── Scroll Reveal ─── */
-  .reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: opacity 0.7s ease, transform 0.7s ease;
+  .spinning { animation: spin 1s linear infinite; display: inline-block; }
+
+  /* ─── PROGRESS BAR ─── */
+  .progress-bar-top {
+    position: fixed;
+    top: 0; left: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--indigo), var(--purple), var(--pink));
+    z-index: 999;
+    transition: width .1s linear;
+    width: 0%;
   }
 
-  .reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-  }
-
-  /* ─── Animated data flow line ─── */
-  .data-line {
-    height: 2px;
-    background: linear-gradient(90deg, transparent, var(--accent), var(--accent2), transparent);
-    border-radius: 99px;
-    margin: 1.5rem 0;
-    position: relative;
-    overflow: hidden;
-  }
-
-  .data-line::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.5), transparent);
-    animation: data-flow 2s linear infinite;
-  }
-
-  @keyframes data-flow {
-    from { transform: translateX(-100%); }
-    to   { transform: translateX(100%); }
-  }
-
-  /* ─── Confidence Meters ─── */
-  .meters {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-    margin-top: 1rem;
-  }
-
-  .meter {
-    flex: 1;
-    min-width: 100px;
-  }
-
-  .meter-label {
-    font-size: 0.65rem;
-    color: var(--muted);
-    margin-bottom: 0.3rem;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .meter-bar {
-    height: 4px;
-    background: rgba(255,255,255,0.08);
-    border-radius: 99px;
-    overflow: hidden;
-  }
-
-  .meter-fill {
-    height: 100%;
-    border-radius: 99px;
-    animation: fill-meter 1.5s ease-out both;
-  }
-
-  @keyframes fill-meter {
-    from { width: 0 !important; }
-  }
-
-  /* ─── Nav ─── */
-  nav {
-    position: sticky;
-    top: 0;
+  /* ─── NAV ─── */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
     z-index: 100;
-    background: rgba(6,11,24,0.85);
-    backdrop-filter: blur(16px);
-    border-bottom: 1px solid var(--border);
-    padding: 0.8rem 2rem;
+    padding: .8rem 2rem;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 0.5rem;
+    background: rgba(7,9,26,.8);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(255,255,255,.06);
   }
-
-  .nav-brand {
+  .nav-logo {
     font-weight: 800;
-    font-size: 1rem;
-    background: linear-gradient(135deg, var(--accent), var(--accent2));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    font-size: .9rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
   }
-
-  .nav-links {
+  .nav-logo .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 8px var(--green);
+    animation: pulse-glow 2s ease infinite;
+  }
+  .nav-steps {
     display: flex;
     gap: 1.5rem;
-    list-style: none;
-  }
-
-  .nav-links a {
+    font-size: .78rem;
     color: var(--muted);
-    text-decoration: none;
-    font-size: 0.8rem;
-    transition: color 0.2s;
+    font-weight: 500;
   }
+  .nav-steps a { color: inherit; text-decoration: none; transition: color .2s; }
+  .nav-steps a:hover { color: var(--text); }
 
-  .nav-links a:hover { color: var(--accent); }
+  @media(max-width:640px) { .nav-steps { display: none; } }
 
-  /* ─── Pulse Rings ─── */
-  .pulse-ring {
+  /* highlight */
+  .hl-blue   { color: var(--blue);   }
+  .hl-indigo { color: var(--indigo); }
+  .hl-amber  { color: var(--amber);  }
+  .hl-green  { color: var(--green);  }
+  .hl-pink   { color: var(--pink);   }
+  .hl-cyan   { color: var(--cyan);   }
+  .hl-purple { color: var(--purple); }
+  .hl-red    { color: var(--red);    }
+
+  .tag {
     display: inline-block;
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    position: relative;
+    font-family: var(--mono);
+    font-size: .72rem;
+    background: rgba(99,102,241,.1);
+    border: 1px solid rgba(99,102,241,.3);
+    color: var(--indigo);
+    padding: .1rem .45rem;
+    border-radius: 5px;
+  }
+  .tag-amber {
+    background: rgba(245,158,11,.1);
+    border-color: rgba(245,158,11,.3);
+    color: var(--amber);
+  }
+  .tag-green {
+    background: rgba(16,185,129,.1);
+    border-color: rgba(16,185,129,.3);
+    color: var(--green);
+  }
+  .tag-pink {
+    background: rgba(236,72,153,.1);
+    border-color: rgba(236,72,153,.3);
+    color: var(--pink);
   }
 
-  .pulse-ring::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    border-radius: 50%;
-    animation: ring-expand 1.5s ease-out infinite;
+  .info-box {
+    background: rgba(59,130,246,.06);
+    border: 1px solid rgba(59,130,246,.2);
+    border-left: 3px solid var(--blue);
+    border-radius: 8px;
+    padding: .9rem 1.1rem;
+    font-size: .82rem;
+    color: #94a3b8;
+    line-height: 1.6;
+    margin-top: 1rem;
   }
 
-  .pulse-ring.blue  { background: #63b3ed; }
-  .pulse-ring.blue::before  { background: rgba(99,179,237,0.4); }
-  .pulse-ring.green { background: #48bb78; }
-  .pulse-ring.green::before { background: rgba(72,187,120,0.4); }
-  .pulse-ring.purple{ background: #9f7aea; }
-  .pulse-ring.purple::before{ background: rgba(159,122,234,0.4); }
-  .pulse-ring.red   { background: #fc8181; }
-  .pulse-ring.red::before   { background: rgba(252,129,129,0.4); }
-
-  @keyframes ring-expand {
-    0%   { transform: scale(1); opacity: 1; }
-    100% { transform: scale(3); opacity: 0; }
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
   }
+  @media(max-width:768px) { .two-col { grid-template-columns: 1fr; } }
+
+  .comparison-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .82rem;
+    margin-top: 1rem;
+  }
+  .comparison-table th {
+    padding: .7rem 1rem;
+    text-align: left;
+    background: var(--bg);
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    border-bottom: 1px solid var(--border);
+  }
+  .comparison-table td {
+    padding: .65rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.04);
+    vertical-align: top;
+    line-height: 1.5;
+  }
+  .comparison-table tr:hover td { background: rgba(255,255,255,.015); }
 </style>
 </head>
 <body>
 
-<!-- Particles -->
-<div class="particles" id="particles"></div>
-<div class="grid-bg"></div>
+<div class="progress-bar-top" id="progress-bar"></div>
 
-<!-- Nav -->
-<nav>
-  <div class="nav-brand">Second Chance — System Design</div>
-  <ul class="nav-links">
-    <li><a href="#overview">Overview</a></li>
-    <li><a href="#features">Features</a></li>
-    <li><a href="#pipeline">ML Pipeline</a></li>
-    <li><a href="#data">Data Flow</a></li>
-    <li><a href="#stack">Tech Stack</a></li>
-  </ul>
+<nav class="nav">
+  <div class="nav-logo"><div class="dot"></div> Adaptive Learning Engine</div>
+  <div class="nav-steps">
+    <a href="#overview">Overview</a>
+    <a href="#onboarding">Onboarding</a>
+    <a href="#model1">Model 1</a>
+    <a href="#model2">Model 2</a>
+    <a href="#formula">Formula Engine</a>
+    <a href="#outputs">Outputs</a>
+    <a href="#simulate">Simulate</a>
+  </div>
 </nav>
 
-<!-- Hero -->
-<div class="hero" id="overview">
-  <div class="hero-badge">AI-Powered Addiction Recovery Platform</div>
-  <h1>Second Chance</h1>
-  <p class="hero-sub">
-    A comprehensive ML suite delivering personalized recovery support through intelligent community clustering, nutrition planning, activity scheduling, and real-time crisis intervention.
+<!-- ═══════════════════════════════ HERO ═══════════════════════════════ -->
+<div class="hero" id="hero">
+  <canvas id="hero-canvas"></canvas>
+  <div class="hero-content">
+    <div class="hero-badge">
+      <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><circle cx="5" cy="5" r="5"/></svg>
+      Hackathon-Grade System
+    </div>
+    <h1>
+      <span class="grad-text">Adaptive Learning</span><br>
+      Intelligence Engine
+    </h1>
+    <p>
+      A complete ML pipeline for children's educational mini-games.
+      Exactly 2 XGBoost models. Everything else is formula-based, deterministic, and explainable.
+    </p>
+    <div class="hero-pills">
+      <span class="pill pill-indigo">11 Skill Nodes</span>
+      <span class="pill pill-amber">Engagement Detection</span>
+      <span class="pill pill-green">Formula Engine</span>
+      <span class="pill pill-pink">Parent Dashboard</span>
+      <span class="pill pill-blue">XGBoost × 2</span>
+    </div>
+    <button class="simulate-btn" onclick="document.getElementById('simulate').scrollIntoView({behavior:'smooth'})">
+      <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Run Live Simulation
+    </button>
+  </div>
+  <div class="scroll-hint">
+    <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    Scroll to explore
+  </div>
+</div>
+
+<!-- ════════════════════════ PIPELINE OVERVIEW ════════════════════════ -->
+<section id="overview">
+  <div class="section-label"><span></span> Architecture</div>
+  <h2 class="section-title">The Complete <span class="grad-text">Pipeline</span></h2>
+  <p class="section-sub">
+    8 stages from parent onboarding to personalised child experience.
+    Only stages 4 and 5 use machine learning. Everything else is rule-based and auditable.
   </p>
 
-  <div class="stats-row">
-    <div class="stat-item">
-      <div class="stat-num">4</div>
-      <div class="stat-label">AI Features</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">20+</div>
-      <div class="stat-label">ML Models</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">160+</div>
-      <div class="stat-label">Curated Recipes</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">100+</div>
-      <div class="stat-label">Activities</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">7-Day</div>
-      <div class="stat-label">Recovery Plans</div>
-    </div>
-    <div class="stat-item">
-      <div class="stat-num">Real-Time</div>
-      <div class="stat-label">Crisis Response</div>
-    </div>
-  </div>
-</div>
-
-<!-- Container -->
-<div class="container">
-
-  <!-- ── Overall Application Flow ── -->
-  <div class="section-header reveal">
-    <h2>Overall Application Flow</h2>
-    <p>End-to-end data journey from user input to personalized recovery support</p>
-    <div class="section-divider"></div>
-  </div>
-
-  <div class="overall-flow reveal">
-    <!-- Row 1: Input -->
-    <div class="flow-row">
-      <div class="flow-node fn-orange">
-        <div class="node-icon">👤</div>
-        <div class="node-title">User Input</div>
-        <div class="node-sub">Demographics, Addiction Profile</div>
+  <div class="pipeline-container">
+    <div class="pipeline-row" id="pipe-row">
+      <div class="pipe-node">
+        <div class="pipe-icon icon-pink">👨‍👩‍👧</div>
+        <span class="pipe-label">Parent Onboarding</span>
       </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node fn-gray">
-        <div class="node-icon">⚙️</div>
-        <div class="node-title">Feature Engineering</div>
-        <div class="node-sub">Encode, Scale, Impute</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-blue">🎮</div>
+        <span class="pipe-label">Gameplay Events</span>
       </div>
-      <div class="flow-arrow">→</div>
-      <div class="flow-node fn-gray">
-        <div class="node-icon">🔍</div>
-        <div class="node-title">Risk Profiling</div>
-        <div class="node-sub">Base Risk Assessment</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-cyan">⚙️</div>
+        <span class="pipe-label">Feature Engineering</span>
       </div>
-    </div>
-
-    <div class="flow-down-arrow">↓</div>
-
-    <!-- Row 2: 4 Features -->
-    <div class="flow-row" style="gap:1rem; flex-wrap:wrap;">
-      <div class="flow-node fn-blue" style="min-width:160px;">
-        <div class="node-icon">🏘️</div>
-        <div class="node-title">Community Clustering</div>
-        <div class="node-sub">6-Model Ensemble + SHAP</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-indigo">🧠</div>
+        <span class="pipe-label" style="color:var(--indigo)">Model 1<br>Skill Mastery</span>
       </div>
-      <div class="flow-node fn-green" style="min-width:160px;">
-        <div class="node-icon">🥗</div>
-        <div class="node-title">Diet Planning</div>
-        <div class="node-sub">3-Stage Nutrition Pipeline</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-amber">⚡</div>
+        <span class="pipe-label" style="color:var(--amber)">Model 2<br>Engagement</span>
       </div>
-      <div class="flow-node fn-purple" style="min-width:160px;">
-        <div class="node-icon">🗓️</div>
-        <div class="node-title">Recovery Engine</div>
-        <div class="node-sub">7-Day Activity Planning</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-green">📐</div>
+        <span class="pipe-label" style="color:var(--green)">Formula Engine</span>
       </div>
-      <div class="flow-node fn-red" style="min-width:160px;">
-        <div class="node-icon">🚨</div>
-        <div class="node-title">Emergency Coping</div>
-        <div class="node-sub">Real-Time Crisis Response</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-purple">🌐</div>
+        <span class="pipe-label">Skill Graph Update</span>
       </div>
-    </div>
-
-    <div class="flow-down-arrow">↓</div>
-
-    <!-- Row 3: Outputs -->
-    <div class="flow-row" style="gap:1rem; flex-wrap:wrap;">
-      <div class="flow-node fn-blue" style="min-width:160px;">
-        <div class="node-icon">📊</div>
-        <div class="node-title">Risk Report</div>
-        <div class="node-sub">Community + Challenges</div>
-      </div>
-      <div class="flow-node fn-green" style="min-width:160px;">
-        <div class="node-icon">🍽️</div>
-        <div class="node-title">Meal Plan</div>
-        <div class="node-sub">5-7 Meals/Day</div>
-      </div>
-      <div class="flow-node fn-purple" style="min-width:160px;">
-        <div class="node-icon">📅</div>
-        <div class="node-title">Weekly Schedule</div>
-        <div class="node-sub">6-12 Activities/Day</div>
-      </div>
-      <div class="flow-node fn-red" style="min-width:160px;">
-        <div class="node-icon">🛡️</div>
-        <div class="node-title">4-Stage Response</div>
-        <div class="node-sub">Immediate Intervention</div>
+      <div class="pipe-arrow"><div class="arrow-line flowing"></div><div class="arrow-head"></div></div>
+      <div class="pipe-node">
+        <div class="pipe-icon icon-pink">📊</div>
+        <span class="pipe-label">Parent Dashboard</span>
       </div>
     </div>
   </div>
 
-  <!-- ── Feature Cards ── -->
-  <div class="section-header reveal" id="features">
-    <h2>Feature Deep Dives</h2>
-    <p>Complete AI/ML pipeline breakdown for each of the 4 core features</p>
-    <div class="section-divider"></div>
+  <div style="margin-top:2rem">
+    <table class="comparison-table" style="background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border)">
+      <thead>
+        <tr>
+          <th>Stage</th>
+          <th>Type</th>
+          <th>What it does</th>
+          <th>Output</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>Parent Onboarding</td><td><span class="tag-green tag">Rule-based</span></td><td>Collect child age, interests, goals, sensitivities</td><td>Starter profile JSON</td></tr>
+        <tr><td>Gameplay Events</td><td><span class="tag-green tag">Rule-based</span></td><td>Game engine streams events per task attempt</td><td>Event log array</td></tr>
+        <tr><td>Feature Engineering</td><td><span class="tag-green tag">Rule-based</span></td><td>Compute 30+ mathematical features from event history</td><td>Feature vectors</td></tr>
+        <tr><td>Skill Mastery Model</td><td><span class="tag">ML — XGBoost</span></td><td>Estimate P(mastered) for each of 11 skills</td><td>Mastery probabilities</td></tr>
+        <tr><td>Engagement Model</td><td><span class="tag-amber tag">ML — XGBoost</span></td><td>Classify current engagement as engaged/neutral/fatigued</td><td>Engagement state + fatigue risk</td></tr>
+        <tr><td>Formula Engine</td><td><span class="tag-green tag">Rule-based</span></td><td>Apply deterministic rules to choose next action</td><td>Next activity JSON</td></tr>
+        <tr><td>Skill Graph Update</td><td><span class="tag-green tag">Rule-based</span></td><td>EMA-smooth new probabilities into profile</td><td>Updated skill graph</td></tr>
+        <tr><td>Parent Dashboard</td><td><span class="tag-green tag">Rule-based</span></td><td>Convert numbers into plain English parent insights</td><td>Parent summary JSON</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="flow-divider">Step 1 — Onboarding</div>
+
+<!-- ════════════════════════ ONBOARDING ════════════════════════ -->
+<section id="onboarding">
+  <div class="section-label"><span></span> Stage 1</div>
+  <h2 class="section-title">Parent <span class="hl-pink">Onboarding</span></h2>
+  <p class="section-sub">
+    Before any ML runs, a parent fills out a short questionnaire.
+    The system uses these answers to build a zero-data starter profile with developmental priors.
+  </p>
+
+  <div class="two-col">
+    <div>
+      <div class="step-card visible" style="padding:0;overflow:hidden">
+        <div style="background:var(--bg2);padding:1rem 1.2rem;border-bottom:1px solid var(--border);font-size:.78rem;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase">Onboarding Form</div>
+        <div style="padding:1.5rem;display:flex;flex-direction:column;gap:1rem;" id="onboard-form">
+          <div class="form-field" style="opacity:0;transform:translateY(10px);transition:all .4s ease">
+            <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em">Child's Name</div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.55rem .9rem;font-size:.9rem;color:var(--text)">Aarav <span class="cursor-blink">|</span></div>
+          </div>
+          <div class="form-field" style="opacity:0;transform:translateY(10px);transition:all .4s .1s ease">
+            <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em">Age</div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.55rem .9rem;font-size:.9rem;color:var(--amber)">5.5 years <span style="color:var(--muted);font-size:.78rem">→ preschool band</span></div>
+          </div>
+          <div class="form-field" style="opacity:0;transform:translateY(10px);transition:all .4s .2s ease">
+            <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em">Interests</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <span class="pill pill-pink">animals</span>
+              <span class="pill pill-blue">music</span>
+              <span class="pill pill-indigo">stories</span>
+            </div>
+          </div>
+          <div class="form-field" style="opacity:0;transform:translateY(10px);transition:all .4s .3s ease">
+            <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em">Goals</div>
+            <div style="display:flex;gap:.5rem;flex-wrap:wrap">
+              <span class="pill pill-green">improve counting</span>
+              <span class="pill pill-green">learn phonics</span>
+            </div>
+          </div>
+          <div class="form-field" style="opacity:0;transform:translateY(10px);transition:all .4s .4s ease">
+            <div style="font-size:.72rem;color:var(--muted);font-weight:700;margin-bottom:.3rem;text-transform:uppercase;letter-spacing:.06em">Session Time</div>
+            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:.55rem .9rem;font-size:.9rem;color:var(--green)">15 minutes</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <h4 style="font-size:1rem;font-weight:700;margin-bottom:1rem;color:var(--muted)">What happens with this data?</h4>
+      <div class="timeline" id="onboard-timeline">
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-tag">age_band = "preschool"</div>
+          <div class="timeline-title">Age → Developmental Band</div>
+          <div class="timeline-body">5.5 years maps to the <strong>preschool</strong> band. This selects the correct developmental milestone priors for all 11 skills.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot amber"></div>
+          <div class="timeline-tag">preferred_modality = "auditory"</div>
+          <div class="timeline-title">Interests → Preferred Modality</div>
+          <div class="timeline-body">music + stories → <strong>auditory modality</strong> preferred. The game engine will serve audio-first tasks by default.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot green"></div>
+          <div class="timeline-tag">phonics + counting priors boosted +0.05</div>
+          <div class="timeline-title">Goals → Prior Adjustment</div>
+          <div class="timeline-body">Stated goals suggest <em>focus areas</em>, not mastery. A tiny +0.05 adjustment signals these should be prioritised first in the session plan.</div>
+        </div>
+        <div class="timeline-item">
+          <div class="timeline-dot"></div>
+          <div class="timeline-tag">confidence = 0.40 (cold start)</div>
+          <div class="timeline-title">All Estimates Are Uncertain</div>
+          <div class="timeline-body">No gameplay data yet. Every skill estimate carries confidence = 0.40 — the formula engine knows not to trust these as strongly as real gameplay data.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="flow-divider">Step 2 — Gameplay Events</div>
+
+<!-- ════════════════════════ EVENTS ════════════════════════ -->
+<section id="events-section">
+  <div class="section-label"><span></span> Stage 2</div>
+  <h2 class="section-title">Gameplay <span class="hl-blue">Events</span></h2>
+  <p class="section-sub">The game engine emits one event per task attempt. These raw events are the only data the ML system ever sees — no video, no audio, no camera.</p>
+
+  <div class="two-col">
+    <div>
+      <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.8rem">Live Event Stream</div>
+      <div class="event-log" id="event-log"></div>
+      <div class="info-box">Each event fires when a child completes one task — a match, a sort, a trace. The system accumulates a rolling window of the last 20 events for feature extraction.</div>
+    </div>
+    <div>
+      <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.8rem">Event Schema</div>
+      <table class="feat-table" style="background:var(--card);border-radius:12px;overflow:hidden;border:1px solid var(--border)">
+        <thead><tr><th>Field</th><th>Type</th><th>Captures</th></tr></thead>
+        <tbody>
+          <tr><td>skill</td><td><span class="feat-val">string</span></td><td>Which of 11 skills was practised</td></tr>
+          <tr><td>correct</td><td><span class="feat-val">bool</span></td><td>Did the child answer correctly?</td></tr>
+          <tr><td>response_time_ms</td><td><span class="feat-val">float</span></td><td>Time from task shown to answer</td></tr>
+          <tr><td>retry_count</td><td><span class="feat-val">int</span></td><td>How many attempts needed</td></tr>
+          <tr><td>hint_used</td><td><span class="feat-val">bool</span></td><td>Did child ask for a hint?</td></tr>
+          <tr><td>pause_duration_ms</td><td><span class="feat-val">float</span></td><td>Gap before first interaction</td></tr>
+          <tr><td>modality</td><td><span class="feat-val">string</span></td><td>visual / auditory / kinesthetic</td></tr>
+          <tr><td>reward_response</td><td><span class="feat-val">float</span></td><td>Enthusiasm after reward (0–1)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="flow-divider">Step 3 — Feature Engineering</div>
+
+<!-- ════════════════════════ FEATURES ════════════════════════ -->
+<section id="features-section">
+  <div class="section-label"><span></span> Stage 3</div>
+  <h2 class="section-title">Feature <span class="hl-cyan">Engineering</span></h2>
+  <p class="section-sub">Raw events are meaningless to a model. Feature engineering computes meaningful signals — trends, rates, patterns — from the event history. This is where the intelligence lives, even before ML.</p>
+
+  <div class="step-grid">
+    <div class="step-card visible">
+      <div class="step-header">
+        <div class="step-num" style="background:rgba(6,182,212,.15);color:var(--cyan)">📊</div>
+        <div>
+          <h3>Skill Features <span style="color:var(--muted);font-weight:400;font-size:.85rem">(Model 1 input)</span></h3>
+          <p class="step-desc">Per-skill features computed from that skill's event history only</p>
+        </div>
+      </div>
+      <table class="feat-table">
+        <thead><tr><th>Feature</th><th>Example value</th><th>Signal</th></tr></thead>
+        <tbody id="skill-feat-table">
+          <tr><td>accuracy_last_5</td><td><span class="feat-val" id="sf1">—</span></td><td>Recent short-term performance</td></tr>
+          <tr><td>accuracy_last_10</td><td><span class="feat-val" id="sf2">—</span></td><td>Medium-term trend</td></tr>
+          <tr><td>response_time_trend</td><td><span class="feat-val" id="sf3">—</span></td><td>Speeding up (mastering) or slowing?</td></tr>
+          <tr><td>hint_usage_rate</td><td><span class="feat-val" id="sf4">—</span></td><td>Hint dependency level</td></tr>
+          <tr><td>current_streak</td><td><span class="feat-val" id="sf5">—</span></td><td>Consecutive correct answers now</td></tr>
+          <tr><td>error_burst_count</td><td><span class="feat-val" id="sf6">—</span></td><td>Times 3+ errors happened in a row</td></tr>
+          <tr><td>visual_success_rate</td><td><span class="feat-val" id="sf7">—</span></td><td>Success rate on visual tasks specifically</td></tr>
+          <tr><td>prior_mastery_prob</td><td><span class="feat-val" id="sf8">—</span></td><td>What the profile already knew</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="step-card visible">
+      <div class="step-header">
+        <div class="step-num" style="background:rgba(245,158,11,.15);color:var(--amber)">⚡</div>
+        <div>
+          <h3>Engagement Features <span style="color:var(--muted);font-weight:400;font-size:.85rem">(Model 2 input)</span></h3>
+          <p class="step-desc">Session-level features computed from the current session window</p>
+        </div>
+      </div>
+      <table class="feat-table">
+        <thead><tr><th>Feature</th><th>Example value</th><th>Signal</th></tr></thead>
+        <tbody id="eng-feat-table">
+          <tr><td>response_time_trend</td><td><span class="feat-val" id="ef1">—</span></td><td><strong style="color:var(--amber)">#1 signal (35.5%)</strong> — slowing = tired</td></tr>
+          <tr><td>error_rate_last_5</td><td><span class="feat-val" id="ef2">—</span></td><td>Errors spiking = attention dropping</td></tr>
+          <tr><td>pause_duration_max</td><td><span class="feat-val" id="ef3">—</span></td><td>Long pauses = zoning out</td></tr>
+          <tr><td>hint_usage_rate_session</td><td><span class="feat-val" id="ef4">—</span></td><td>Rising hints = child struggling</td></tr>
+          <tr><td>session_duration_ratio</td><td><span class="feat-val" id="ef5">—</span></td><td>Later in session = more likely tired</td></tr>
+          <tr><td>reward_response_mean</td><td><span class="feat-val" id="ef6">—</span></td><td>Tired children stop caring about rewards</td></tr>
+          <tr><td>streak_break_count</td><td><span class="feat-val" id="ef7">—</span></td><td>Inconsistency = fatigue signal</td></tr>
+          <tr><td>tasks_per_minute</td><td><span class="feat-val" id="ef8">—</span></td><td>Slowing pace = fatigue</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<div class="flow-divider">Step 4 — ML Model 1</div>
+
+<!-- ════════════════════════ MODEL 1 ════════════════════════ -->
+<section id="model1">
+  <div class="section-label"><span></span> Stage 4 — Machine Learning</div>
+  <h2 class="section-title">Model 1: Skill <span class="hl-indigo">Mastery</span> Classifier</h2>
+  <p class="section-sub">
+    11 independent XGBoost classifiers — one per skill. Each answers the same question for its skill:
+    <strong>"What is the probability this child has mastered this skill right now?"</strong>
+  </p>
+
+  <div class="step-grid" style="margin-bottom:2rem">
+    <div class="step-card visible">
+      <div class="step-header">
+        <div class="step-num" style="background:rgba(99,102,241,.15);color:var(--indigo)">🧠</div>
+        <div>
+          <h3>Architecture</h3>
+          <p class="step-desc">Why 11 separate models instead of one?</p>
+        </div>
+      </div>
+      <div class="timeline" style="padding-left:2rem">
+        <div class="timeline-item visible">
+          <div class="timeline-dot"></div>
+          <div class="timeline-title hl-indigo">Independence of Evidence</div>
+          <div class="timeline-body">A child can be great at Color Sorting (visual) but terrible at Phonics (auditory). One combined model would let counting performance corrupt phonics predictions. Separate models = clean estimates.</div>
+        </div>
+        <div class="timeline-item visible">
+          <div class="timeline-dot amber"></div>
+          <div class="timeline-title hl-amber">Cold Start Per Skill</div>
+          <div class="timeline-body">Each skill has its own data sparsity. A child may have 50 counting events but 3 phonics events. Each model handles its own cold start with age-band priors independently.</div>
+        </div>
+        <div class="timeline-item visible">
+          <div class="timeline-dot green"></div>
+          <div class="timeline-title hl-green">Calibration Per Skill</div>
+          <div class="timeline-body">Isotonic calibration is fitted separately per skill. A threshold of 0.70 means "70% probability mastered" — and that is actually true because calibration enforces it.</div>
+        </div>
+      </div>
+    </div>
+    <div class="step-card visible">
+      <div class="step-header">
+        <div class="step-num" style="background:rgba(99,102,241,.15);color:var(--indigo)">⚙️</div>
+        <div><h3>XGBoost Configuration</h3><p class="step-desc">Key hyperparameters and why</p></div>
+      </div>
+      <table class="feat-table">
+        <thead><tr><th>Parameter</th><th>Value</th><th>Why</th></tr></thead>
+        <tbody>
+          <tr><td>objective</td><td><span class="feat-val">binary:logistic</span></td><td>Output probability, not raw score</td></tr>
+          <tr><td>max_depth</td><td><span class="feat-val">4</span></td><td>Shallow = interpretable, low overfit</td></tr>
+          <tr><td>n_estimators</td><td><span class="feat-val">150</span></td><td>Enough trees for small datasets</td></tr>
+          <tr><td>learning_rate</td><td><span class="feat-val">0.05</span></td><td>Small = stable with calibration</td></tr>
+          <tr><td>scale_pos_weight</td><td><span class="feat-val">auto</span></td><td>Fix class imbalance (not all kids mastered all skills)</td></tr>
+          <tr><td>calibration</td><td><span class="feat-val">isotonic cv=3</span></td><td>Makes probabilities trustworthy</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
-  <div class="features-grid">
+  <!-- LIVE SKILL BARS -->
+  <div class="step-card full-width visible" id="skill-mastery-card">
+    <div class="step-header">
+      <div class="step-num" style="background:rgba(99,102,241,.15);color:var(--indigo)">📈</div>
+      <div><h3>Live Mastery Output — Aarav, Session 2</h3><p class="step-desc">Calibrated P(mastered) per skill. Hover a bar for interpretation.</p></div>
+      <button onclick="animateSkillBars()" style="margin-left:auto;background:rgba(99,102,241,.15);border:1px solid rgba(99,102,241,.3);color:var(--indigo);padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:600">Re-run Model</button>
+    </div>
+    <div class="skill-grid" id="skill-bars"></div>
+  </div>
+</section>
 
-    <!-- Feature 1: Community Clustering -->
-    <div class="feature-card f1 reveal">
-      <div class="card-glow"></div>
-      <div class="card-accent-bar"></div>
-      <div class="card-header">
-        <div class="card-icon-wrap">🏘️</div>
-        <div class="card-number">Feature 01</div>
-        <div class="card-title">Community Clustering & Risk Profiling</div>
-        <div class="card-subtitle">6-model ensemble with SHAP explainability and survival analysis</div>
-      </div>
-      <div class="card-body">
+<div class="flow-divider">Step 5 — ML Model 2</div>
 
-        <div class="pipeline">
-          <div class="pipeline-title">ML Pipeline</div>
-          <div class="pipeline-steps">
-            <div class="step">
-              <div class="step-dot">1</div>
-              <div class="step-content">
-                <div class="step-name">Risk Classifier — LightGBM</div>
-                <div class="step-desc">Predicts low / medium / high relapse risk with calibrated probabilities</div>
-              </div>
+<!-- ════════════════════════ MODEL 2 ════════════════════════ -->
+<section id="model2">
+  <div class="section-label"><span></span> Stage 5 — Machine Learning</div>
+  <h2 class="section-title">Model 2: Engagement & <span class="hl-amber">Fatigue</span> Classifier</h2>
+  <p class="section-sub">
+    One XGBoost classifier with 3 output classes: <span class="hl-green">Engaged</span>, <span class="hl-amber">Neutral</span>, and <span class="hl-red">Fatigued</span>.
+    It reads the current session temperature — completely separate from skill ability.
+  </p>
+
+  <div class="two-col" style="margin-bottom:2rem">
+    <div>
+      <div class="step-card visible">
+        <div class="step-header">
+          <div class="step-num" style="background:rgba(245,158,11,.15);color:var(--amber)">🔥</div>
+          <div><h3>Why a Separate Model?</h3></div>
+        </div>
+        <div class="info-box" style="background:rgba(245,158,11,.06);border-color:rgba(245,158,11,.2);border-left-color:var(--amber)">
+          <strong style="color:var(--amber)">Ability ≠ State.</strong> A child with high counting mastery (Model 1) can still be exhausted right now (Model 2). Mixing them would corrupt both. Model 1 measures <em>what the child can do</em>. Model 2 measures <em>how the child is doing right now</em>.
+        </div>
+        <div style="margin-top:1.2rem">
+          <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Top Predictive Features</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div style="display:flex;justify-content:space-between;font-size:.8rem">
+              <span>response_time_trend</span>
+              <span style="display:flex;align-items:center;gap:.5rem"><div style="width:120px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border)"><div style="width:90%;height:100%;background:var(--amber);border-radius:4px"></div></div><span class="hl-amber">35.5%</span></span>
             </div>
-            <div class="step">
-              <div class="step-dot">2</div>
-              <div class="step-content">
-                <div class="step-name">Relapse Probability — XGBoost</div>
-                <div class="step-desc">Continuous regression score 0–1 for relapse likelihood</div>
-              </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem">
+              <span>response_time_last3_mean</span>
+              <span style="display:flex;align-items:center;gap:.5rem"><div style="width:120px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border)"><div style="width:45%;height:100%;background:var(--amber);border-radius:4px"></div></div><span class="hl-amber">16.7%</span></span>
             </div>
-            <div class="step">
-              <div class="step-dot">3</div>
-              <div class="step-content">
-                <div class="step-name">Survival Analysis — Cox PH</div>
-                <div class="step-desc">Estimates median days-to-relapse using lifelines library</div>
-              </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem">
+              <span>time_to_first_response_trend</span>
+              <span style="display:flex;align-items:center;gap:.5rem"><div style="width:120px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border)"><div style="width:26%;height:100%;background:var(--amber);border-radius:4px"></div></div><span class="hl-amber">9.6%</span></span>
             </div>
-            <div class="step">
-              <div class="step-dot">4</div>
-              <div class="step-content">
-                <div class="step-name">Community Clustering — K-Means (k=5)</div>
-                <div class="step-desc">Groups users by shared recovery patterns into 5 communities</div>
-              </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem">
+              <span>error_rate_last_5</span>
+              <span style="display:flex;align-items:center;gap:.5rem"><div style="width:120px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border)"><div style="width:25%;height:100%;background:var(--amber);border-radius:4px"></div></div><span class="hl-amber">9.6%</span></span>
             </div>
-            <div class="step">
-              <div class="step-dot">5</div>
-              <div class="step-content">
-                <div class="step-name">Challenge Recommender — LightGBM</div>
-                <div class="step-desc">Suggests recovery challenges matching user profile</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">6</div>
-              <div class="step-content">
-                <div class="step-name">Emergency Detector — Isolation Forest</div>
-                <div class="step-desc">Anomaly detection on snapshot features for early crisis flagging</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">7</div>
-              <div class="step-content">
-                <div class="step-name">Explainability — SHAP</div>
-                <div class="step-desc">Top-3 contributing features for every prediction (privacy-first, no PII)</div>
-              </div>
+            <div style="display:flex;justify-content:space-between;font-size:.8rem">
+              <span>hint_usage_rate_session</span>
+              <span style="display:flex;align-items:center;gap:.5rem"><div style="width:120px;height:8px;border-radius:4px;background:var(--bg);overflow:hidden;border:1px solid var(--border)"><div style="width:21%;height:100%;background:var(--amber);border-radius:4px"></div></div><span class="hl-amber">8.1%</span></span>
             </div>
           </div>
         </div>
-
-        <div class="tech-tags">
-          <span class="tag blue">LightGBM</span>
-          <span class="tag blue">XGBoost</span>
-          <span class="tag blue">K-Means</span>
-          <span class="tag blue">Cox PH</span>
-          <span class="tag blue">SHAP</span>
-          <span class="tag blue">Isolation Forest</span>
-          <span class="tag gray">FastAPI</span>
-          <span class="tag gray">joblib</span>
-        </div>
-
-        <div class="output-block">
-          <div class="output-label">JSON Output</div>
-          <div class="output-field"><span class="output-key">risk_category</span><span class="output-colon">:</span><span class="output-val">"high"</span></div>
-          <div class="output-field"><span class="output-key">relapse_probability</span><span class="output-colon">:</span><span class="output-val">0.82</span></div>
-          <div class="output-field"><span class="output-key">median_time_to_relapse</span><span class="output-colon">:</span><span class="output-val">14.3 days</span></div>
-          <div class="output-field"><span class="output-key">community_id</span><span class="output-colon">:</span><span class="output-val">3</span></div>
-          <div class="output-field"><span class="output-key">recommended_challenge</span><span class="output-colon">:</span><span class="output-val">"30-day sobriety"</span></div>
-          <div class="output-field"><span class="output-key">top_shap_features</span><span class="output-colon">:</span><span class="output-val">[stress, sleep, duration]</span></div>
-        </div>
-
       </div>
     </div>
 
-    <!-- Feature 2: Diet Planning -->
-    <div class="feature-card f2 reveal">
-      <div class="card-glow"></div>
-      <div class="card-accent-bar"></div>
-      <div class="card-header">
-        <div class="card-icon-wrap">🥗</div>
-        <div class="card-number">Feature 02</div>
-        <div class="card-title">Personalized Diet Planning & Nutrition</div>
-        <div class="card-subtitle">3-stage organ-aware nutrition pipeline with 160+ clinical recipes</div>
-      </div>
-      <div class="card-body">
+    <div>
+      <div class="step-card visible">
+        <div class="step-header">
+          <div class="step-num" style="background:rgba(245,158,11,.15);color:var(--amber)">🎯</div>
+          <div><h3>Live Engagement Output</h3><p class="step-desc">Calibrated probabilities from the 3-class classifier</p></div>
+          <button onclick="animateEngagement()" style="margin-left:auto;background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.3);color:var(--amber);padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:600">Cycle States</button>
+        </div>
+        <div class="engagement-viz">
+          <div class="gauge-container">
+            <canvas id="gauge-canvas" width="220" height="130"></canvas>
+            <div class="gauge-label">
+              <span class="gauge-state" id="gauge-state-text">—</span>
+              <span class="gauge-sub" id="gauge-sub-text">fatigue risk: —</span>
+            </div>
+          </div>
+          <div class="prob-bars-eng" id="eng-bars">
+            <div class="eng-row">
+              <span class="eng-label hl-red">Fatigued</span>
+              <div class="eng-bar-bg"><div class="eng-bar-fill" id="bar-fat" style="background:var(--red)"></div></div>
+              <span class="eng-prob hl-red" id="prob-fat">—</span>
+            </div>
+            <div class="eng-row">
+              <span class="eng-label hl-amber">Neutral</span>
+              <div class="eng-bar-bg"><div class="eng-bar-fill" id="bar-neu" style="background:var(--amber)"></div></div>
+              <span class="eng-prob hl-amber" id="prob-neu">—</span>
+            </div>
+            <div class="eng-row">
+              <span class="eng-label hl-green">Engaged</span>
+              <div class="eng-bar-bg"><div class="eng-bar-fill" id="bar-eng" style="background:var(--green)"></div></div>
+              <span class="eng-prob hl-green" id="prob-eng">—</span>
+            </div>
+          </div>
+          <div id="alert-badge" style="font-size:.78rem;padding:.3rem .8rem;border-radius:8px;font-weight:700;display:none"></div>
+        </div>
 
-        <div class="pipeline">
-          <div class="pipeline-title">3-Stage ML Pipeline</div>
-          <div class="pipeline-steps">
-            <div class="step">
-              <div class="step-dot">1</div>
-              <div class="step-content">
-                <div class="step-name">Stage 1 — Organ Risk Estimation (XGBoost)</div>
-                <div class="step-desc">Predicts low/medium/high risk for liver, kidney, gut, and nerve. Isotonic calibration ensures reliable probabilities.</div>
-              </div>
+        <div style="margin-top:1.5rem;padding-top:1.2rem;border-top:1px solid var(--border)">
+          <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em;margin-bottom:.75rem">Alert Threshold Rules (formula — not ML)</div>
+          <div style="display:flex;flex-direction:column;gap:.5rem">
+            <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem">
+              <div style="width:12px;height:12px;border-radius:3px;background:var(--red);flex-shrink:0"></div>
+              <span><span class="hl-red">fatigue_risk &ge; 0.80</span> → <strong>HARD STOP</strong> — end session immediately</span>
             </div>
-            <div class="step">
-              <div class="step-dot">2</div>
-              <div class="step-content">
-                <div class="step-name">Stage 2 — Nutrition Planning (LightGBM)</div>
-                <div class="step-desc">Multi-output regressor predicts calorie, protein, carbs, fats, hydration targets. Clinical safety layer enforces hard constraints (e.g., alcohol users always get liver focus).</div>
-              </div>
+            <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem">
+              <div style="width:12px;height:12px;border-radius:3px;background:var(--amber);flex-shrink:0"></div>
+              <span><span class="hl-amber">fatigue_risk &ge; 0.60</span> → <strong>SOFT ALERT</strong> — shorten tasks, switch modality</span>
             </div>
-            <div class="step">
-              <div class="step-dot">3</div>
-              <div class="step-content">
-                <div class="step-name">Stage 3 — Meal Ranking (LightGBM LambdaRank)</div>
-                <div class="step-desc">Selects 5-7 optimal meals/day from 160+ clinically-tagged recipes (Indian, Western, Pan-Asian) timed for breakfast, lunch, dinner, snacks.</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">4</div>
-              <div class="step-content">
-                <div class="step-name">Feature Engineering</div>
-                <div class="step-desc">substance_burden_score, liver_stress_index, gut_disruption_index, and 12+ derived features</div>
-              </div>
+            <div style="display:flex;align-items:center;gap:.75rem;font-size:.82rem">
+              <div style="width:12px;height:12px;border-radius:3px;background:var(--green);flex-shrink:0"></div>
+              <span><span class="hl-green">fatigue_risk &lt; 0.60</span> → <strong>CONTINUE</strong> — maintain session plan</span>
             </div>
           </div>
         </div>
-
-        <div class="tech-tags">
-          <span class="tag green">XGBoost</span>
-          <span class="tag green">LightGBM</span>
-          <span class="tag green">LambdaRank</span>
-          <span class="tag green">Isotonic Cal.</span>
-          <span class="tag gray">Pydantic</span>
-          <span class="tag gray">pandas</span>
-        </div>
-
-        <div class="output-block">
-          <div class="output-label">MealPlanOutput</div>
-          <div class="output-field"><span class="output-key">organ_risk</span><span class="output-colon">:</span><span class="output-val">{liver: high, kidney: med}</span></div>
-          <div class="output-field"><span class="output-key">daily_targets</span><span class="output-colon">:</span><span class="output-val">2100 kcal, 85g protein</span></div>
-          <div class="output-field"><span class="output-key">meals_per_day</span><span class="output-colon">:</span><span class="output-val">5-7 meals</span></div>
-          <div class="output-field"><span class="output-key">cuisines</span><span class="output-colon">:</span><span class="output-val">Indian / Western / Pan-Asian</span></div>
-          <div class="output-field"><span class="output-key">clinical_overrides</span><span class="output-colon">:</span><span class="output-val">liver_safe=true</span></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Feature 3: Recovery Engine -->
-    <div class="feature-card f3 reveal">
-      <div class="card-glow"></div>
-      <div class="card-accent-bar"></div>
-      <div class="card-header">
-        <div class="card-icon-wrap">🗓️</div>
-        <div class="card-number">Feature 03</div>
-        <div class="card-title">Recovery Engine — 7-Day Activity Planning</div>
-        <div class="card-subtitle">4-model clinical pipeline generating week-long personalized schedules</div>
-      </div>
-      <div class="card-body">
-
-        <div class="pipeline">
-          <div class="pipeline-title">4-Model ML Pipeline</div>
-          <div class="pipeline-steps">
-            <div class="step">
-              <div class="step-dot">1</div>
-              <div class="step-content">
-                <div class="step-name">Model 1 — Risk Estimator (XGBoost Multi-Output)</div>
-                <div class="step-desc">Classifies 6 ordinal targets: addiction_risk, weakness, numbness, recovery_intensity_need, sleep_risk, stress_risk (classes 0-4)</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">2</div>
-              <div class="step-content">
-                <div class="step-name">Model 2 — Organ Stress Prioritizer (XGBoost)</div>
-                <div class="step-desc">Ranks recovery priority for liver, kidney, gut, nerve (0=low → 3=critical). Substance-specific safety floor rules override predictions.</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">3</div>
-              <div class="step-content">
-                <div class="step-name">Model 3 — Activity Planner (XGBoost, 8 targets)</div>
-                <div class="step-desc">Predicts activities_per_day, walk/breathing/mindfulness durations, craving sessions, sleep prep, intensity band, rest breaks</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">4</div>
-              <div class="step-content">
-                <div class="step-name">Clinical Validator — Zero-Violation Safety Layer</div>
-                <div class="step-desc">Enforces 100+ curated WHO/NIDA/SAMHSA activities, substance-specific tagging, contraindication warnings, clinician referral flag if confidence &lt; 0.8</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tech-tags">
-          <span class="tag purple">XGBoost</span>
-          <span class="tag purple">Multi-Output</span>
-          <span class="tag purple">Isotonic Cal.</span>
-          <span class="tag purple">Rule Engine</span>
-          <span class="tag gray">Pydantic</span>
-          <span class="tag gray">WHO/NIDA</span>
-        </div>
-
-        <div class="output-block">
-          <div class="output-label">WeeklyRecoveryPlan</div>
-          <div class="output-field"><span class="output-key">days</span><span class="output-colon">:</span><span class="output-val">7 themed days</span></div>
-          <div class="output-field"><span class="output-key">activities_per_day</span><span class="output-colon">:</span><span class="output-val">6-12 scheduled</span></div>
-          <div class="output-field"><span class="output-key">confidence_score</span><span class="output-colon">:</span><span class="output-val">0.87</span></div>
-          <div class="output-field"><span class="output-key">clinician_flag</span><span class="output-colon">:</span><span class="output-val">false</span></div>
-          <div class="output-field"><span class="output-key">warnings</span><span class="output-colon">:</span><span class="output-val">15+ contraindications checked</span></div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Feature 4: Emergency Coping -->
-    <div class="feature-card f4 reveal">
-      <div class="card-glow"></div>
-      <div class="card-accent-bar"></div>
-      <div class="card-header">
-        <div class="card-icon-wrap">🚨</div>
-        <div class="card-number">Feature 04</div>
-        <div class="card-title">Emergency Coping Engine</div>
-        <div class="card-subtitle">Real-time 5-model crisis intervention with LSTM craving forecasting</div>
-      </div>
-      <div class="card-body">
-
-        <div class="pipeline">
-          <div class="pipeline-title">5-Model Real-Time Pipeline</div>
-          <div class="pipeline-steps">
-            <div class="step">
-              <div class="step-dot">1</div>
-              <div class="step-content">
-                <div class="step-name">Model 1 — Risk Detection (XGBoost)</div>
-                <div class="step-desc">Regressor + classifier: continuous risk_score and discrete risk_category (low/med/high/critical)</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">2</div>
-              <div class="step-content">
-                <div class="step-name">Model 2 — Relapse Prediction (XGBoost)</div>
-                <div class="step-desc">Binary classifier: predicts relapse_within_24h probability</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">3</div>
-              <div class="step-content">
-                <div class="step-name">Model 3 — Intervention Recommender (LightGBM)</div>
-                <div class="step-desc">Recommends top-3 personalized interventions from library (breathing, meditation, walk, etc.)</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">4</div>
-              <div class="step-content">
-                <div class="step-name">Model 4 — Contextual Bandit (RL)</div>
-                <div class="step-desc">Q-learning style personalization: learns from user feedback which interventions work best per user</div>
-              </div>
-            </div>
-            <div class="step">
-              <div class="step-dot">5</div>
-              <div class="step-content">
-                <div class="step-name">Model 5 — Craving LSTM (PyTorch)</div>
-                <div class="step-desc">Predicts hours until next craving episode from 8 sequential features — enables proactive intervention</div>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="tech-tags">
-          <span class="tag red">XGBoost</span>
-          <span class="tag red">LightGBM</span>
-          <span class="tag red">LSTM</span>
-          <span class="tag red">Contextual Bandit</span>
-          <span class="tag red">Q-Learning</span>
-          <span class="tag orange">PyTorch</span>
-          <span class="tag gray">Pydantic</span>
-        </div>
-
-        <div class="output-block">
-          <div class="output-label">CopingResponse — 4 Stages</div>
-          <div class="output-field"><span class="output-key">stage_1</span><span class="output-colon">:</span><span class="output-val">Emotional Trigger Video</span></div>
-          <div class="output-field"><span class="output-key">stage_2</span><span class="output-colon">:</span><span class="output-val">Motivational Message</span></div>
-          <div class="output-field"><span class="output-key">stage_3</span><span class="output-colon">:</span><span class="output-val">Guided Technique (audio)</span></div>
-          <div class="output-field"><span class="output-key">stage_4</span><span class="output-colon">:</span><span class="output-val">Craving Strategy + 10-min timer</span></div>
-          <div class="output-field"><span class="output-key">next_craving</span><span class="output-colon">:</span><span class="output-val">LSTM forecast datetime</span></div>
-        </div>
-
-      </div>
-    </div>
-
-  </div>
-
-  <!-- ── Full ML Pipeline Row ── -->
-  <div class="section-header reveal" id="pipeline">
-    <h2>Unified ML Pipeline Architecture</h2>
-    <p>How all models chain together across the full application lifecycle</p>
-    <div class="section-divider"></div>
-  </div>
-
-  <div class="ml-pipeline-full reveal">
-    <div class="pipeline-row">
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 0</div>
-        <div class="stage-name">Data Ingestion</div>
-        <div class="stage-models">
-          <div class="stage-model s-orange">addiction_dataset_2000.csv</div>
-          <div class="stage-model s-orange">User API Input (Pydantic)</div>
-          <div class="stage-model s-orange">Real-Time Context (Emergency)</div>
-        </div>
-      </div>
-
-      <div class="pipeline-connector">→</div>
-
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 1</div>
-        <div class="stage-name">Preprocessing</div>
-        <div class="stage-models">
-          <div class="stage-model s-blue">Drop PII / user_id</div>
-          <div class="stage-model s-blue">OrdinalEncoder</div>
-          <div class="stage-model s-blue">StandardScaler</div>
-          <div class="stage-model s-blue">SimpleImputer</div>
-          <div class="stage-model s-blue">Feature Engineering</div>
-        </div>
-      </div>
-
-      <div class="pipeline-connector">→</div>
-
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 2</div>
-        <div class="stage-name">Risk Modeling</div>
-        <div class="stage-models">
-          <div class="stage-model s-blue">LightGBM — Risk Classifier</div>
-          <div class="stage-model s-blue">XGBoost — Relapse Prob.</div>
-          <div class="stage-model s-blue">Cox PH — Survival</div>
-          <div class="stage-model s-blue">Isolation Forest — Anomaly</div>
-        </div>
-      </div>
-
-      <div class="pipeline-connector">→</div>
-
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 3</div>
-        <div class="stage-name">Personalization</div>
-        <div class="stage-models">
-          <div class="stage-model s-green">K-Means Community (k=5)</div>
-          <div class="stage-model s-green">XGBoost Organ Prioritizer</div>
-          <div class="stage-model s-green">LightGBM Nutrition</div>
-          <div class="stage-model s-green">LightGBM LambdaRank</div>
-        </div>
-      </div>
-
-      <div class="pipeline-connector">→</div>
-
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 4</div>
-        <div class="stage-name">Planning & RL</div>
-        <div class="stage-models">
-          <div class="stage-model s-purple">XGBoost Activity Planner</div>
-          <div class="stage-model s-purple">LSTM Craving Forecast</div>
-          <div class="stage-model s-purple">Contextual Bandit (RL)</div>
-          <div class="stage-model s-purple">LightGBM Interventions</div>
-        </div>
-      </div>
-
-      <div class="pipeline-connector">→</div>
-
-      <div class="pipeline-stage">
-        <div class="stage-label">Layer 5</div>
-        <div class="stage-name">Safety & Output</div>
-        <div class="stage-models">
-          <div class="stage-model s-red">Clinical Validator</div>
-          <div class="stage-model s-red">SHAP Explainer</div>
-          <div class="stage-model s-red">Isotonic Calibration</div>
-          <div class="stage-model s-red">JSON / FastAPI Response</div>
-        </div>
-      </div>
-    </div>
-
-    <div class="data-line" style="margin-top:2rem;"></div>
-
-    <div class="meters">
-      <div class="meter">
-        <div class="meter-label"><span>Prediction Accuracy</span><span>~91%</span></div>
-        <div class="meter-bar"><div class="meter-fill" style="width:91%; background: linear-gradient(90deg, #63b3ed, #9f7aea);"></div></div>
-      </div>
-      <div class="meter">
-        <div class="meter-label"><span>Clinical Safety Compliance</span><span>100%</span></div>
-        <div class="meter-bar"><div class="meter-fill" style="width:100%; background: linear-gradient(90deg, #48bb78, #63b3ed);"></div></div>
-      </div>
-      <div class="meter">
-        <div class="meter-label"><span>Real-Time Latency</span><span>&lt;200ms</span></div>
-        <div class="meter-bar"><div class="meter-fill" style="width:85%; background: linear-gradient(90deg, #f6ad55, #fc8181);"></div></div>
-      </div>
-      <div class="meter">
-        <div class="meter-label"><span>SHAP Coverage</span><span>100%</span></div>
-        <div class="meter-bar"><div class="meter-fill" style="width:100%; background: linear-gradient(90deg, #9f7aea, #63b3ed);"></div></div>
       </div>
     </div>
   </div>
+</section>
 
-  <!-- ── Data Flow ── -->
-  <div class="section-header reveal" id="data">
-    <h2>Data Flow & Interfaces</h2>
-    <p>Input contracts, processing stages, and output schemas across all features</p>
-    <div class="section-divider"></div>
-  </div>
+<div class="flow-divider">Step 6 — Formula Engine</div>
 
-  <div class="data-flow reveal">
-    <div class="df-grid">
-      <div class="df-box">
-        <div class="df-box-icon">📥</div>
-        <div class="df-box-title">Input Signals</div>
-        <ul class="df-box-items">
-          <li>Demographics (age, gender, BMI)</li>
-          <li>Addiction type & duration (years)</li>
-          <li>Substance use frequency</li>
-          <li>Craving level & mood state</li>
-          <li>Sleep quality & stress level</li>
-          <li>Recovery stage & history</li>
-          <li>Location & time-of-day context</li>
-          <li>Previous coping success rate</li>
-        </ul>
-      </div>
+<!-- ════════════════════════ FORMULA ENGINE ════════════════════════ -->
+<section id="formula">
+  <div class="section-label"><span></span> Stage 6 — Deterministic</div>
+  <h2 class="section-title">Formula <span class="hl-green">Engine</span></h2>
+  <p class="section-sub">
+    The ML models never make product decisions directly. The Formula Engine reads their outputs and applies transparent, auditable rules to choose the next action.
+    <strong>Zero ML here.</strong>
+  </p>
 
-      <div class="df-box">
-        <div class="df-box-icon">⚗️</div>
-        <div class="df-box-title">Feature Engineering</div>
-        <ul class="df-box-items">
-          <li>substance_burden_score</li>
-          <li>liver_stress_index</li>
-          <li>gut_disruption_index</li>
-          <li>energy_enc (ordinal)</li>
-          <li>relapse_risk_enc</li>
-          <li>adherence_risk score</li>
-          <li>Polynomial interaction terms</li>
-          <li>Temporal context encoding</li>
-        </ul>
-      </div>
-
-      <div class="df-box">
-        <div class="df-box-icon">🧠</div>
-        <div class="df-box-title">Model Inference</div>
-        <ul class="df-box-items">
-          <li>6 ensemble models (Community)</li>
-          <li>3-stage pipeline (Diet)</li>
-          <li>4-model chain (Recovery)</li>
-          <li>5-model real-time (Emergency)</li>
-          <li>SHAP on all predictions</li>
-          <li>Isotonic calibration</li>
-          <li>Safety floor rule overrides</li>
-          <li>Contextual bandit selection</li>
-        </ul>
-      </div>
-
-      <div class="df-box">
-        <div class="df-box-icon">🛡️</div>
-        <div class="df-box-title">Safety Layers</div>
-        <ul class="df-box-items">
-          <li>Clinical hard constraints (0% violation)</li>
-          <li>Substance-specific floor rules</li>
-          <li>Organ contraindication checks</li>
-          <li>Clinician referral flag (&lt;0.8 confidence)</li>
-          <li>15+ warning categories</li>
-          <li>PII stripping (no user_id stored)</li>
-          <li>Isotonic probability calibration</li>
-          <li>Intervention contraindication matrix</li>
-        </ul>
-      </div>
-
-      <div class="df-box">
-        <div class="df-box-icon">📤</div>
-        <div class="df-box-title">Output Contracts</div>
-        <ul class="df-box-items">
-          <li>Pydantic-validated JSON schemas</li>
-          <li>FastAPI REST endpoints</li>
-          <li>risk_category + probability</li>
-          <li>Full weekly activity schedule</li>
-          <li>5-7 meals/day with nutrition facts</li>
-          <li>4-stage emergency response</li>
-          <li>SHAP feature importance</li>
-          <li>Next craving datetime forecast</li>
-        </ul>
-      </div>
-
-      <div class="df-box">
-        <div class="df-box-icon">🔄</div>
-        <div class="df-box-title">Feedback Loops</div>
-        <ul class="df-box-items">
-          <li>Contextual Bandit Q-value updates</li>
-          <li>User intervention success tracking</li>
-          <li>Proactive craving schedule (LSTM)</li>
-          <li>Confidence score monitoring</li>
-          <li>Community reassignment signals</li>
-          <li>Adherence risk recalibration</li>
-          <li>Challenge completion tracking</li>
-          <li>Relapse event feedback</li>
-        </ul>
-      </div>
+  <div style="display:flex;align-items:center;gap:1rem;margin-bottom:2rem;padding:1rem 1.5rem;background:rgba(16,185,129,.06);border:1px solid rgba(16,185,129,.2);border-radius:12px">
+    <span style="font-size:1.5rem">🔑</span>
+    <div>
+      <div style="font-size:.9rem;font-weight:700;color:var(--green);margin-bottom:.2rem">The Core Principle</div>
+      <div style="font-size:.82rem;color:var(--muted);line-height:1.5">ML tells you <em>the state of the world</em>. Business logic decides <em>what to do about it</em>. Never let a model make a product decision directly — that's how you get unsafe, unexplainable outcomes in a child-facing product.</div>
     </div>
   </div>
 
-  <!-- ── Tech Stack ── -->
-  <div class="section-header reveal" id="stack">
-    <h2>Technology Stack</h2>
-    <p>Complete set of libraries, frameworks, and tools powering the platform</p>
-    <div class="section-divider"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem">
+    <div style="font-size:.78rem;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em">Decision Rules</div>
+    <button onclick="animateFormulas()" style="background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green);padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:600">Activate Rules</button>
   </div>
 
-  <div class="tech-stack reveal">
-    <div class="tech-categories">
+  <div class="formula-grid" id="formula-grid"></div>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🤖</div>
-        <div class="tech-cat-name">Gradient Boosting</div>
-        <div class="tech-items">
-          <div class="tech-item">XGBoost</div>
-          <div class="tech-item">LightGBM</div>
-          <div class="tech-item">Multi-Output</div>
-          <div class="tech-item">LambdaRank</div>
-        </div>
-      </div>
+  <!-- Decision chain -->
+  <div class="step-card full-width visible" style="margin-top:2rem">
+    <div class="step-header">
+      <div class="step-num" style="background:rgba(16,185,129,.15);color:var(--green)">🔗</div>
+      <div><h3>Live Decision Chain — Aarav's Next Activity</h3><p class="step-desc">Watch the formula engine work through each decision sequentially</p></div>
+      <button onclick="runDecisionChain()" style="margin-left:auto;background:rgba(16,185,129,.1);border:1px solid rgba(16,185,129,.3);color:var(--green);padding:.4rem .9rem;border-radius:8px;cursor:pointer;font-size:.78rem;font-weight:600">Run Chain</button>
+    </div>
+    <div id="decision-chain" style="font-family:var(--mono);font-size:.78rem;display:flex;flex-direction:column;gap:.4rem;padding:.5rem 0"></div>
+  </div>
+</section>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🧬</div>
-        <div class="tech-cat-name">Deep Learning</div>
-        <div class="tech-items">
-          <div class="tech-item">PyTorch</div>
-          <div class="tech-item">LSTM</div>
-          <div class="tech-item">Sequential Models</div>
-        </div>
-      </div>
+<div class="flow-divider">Steps 7 & 8 — Outputs</div>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🎯</div>
-        <div class="tech-cat-name">Survival & Anomaly</div>
-        <div class="tech-items">
-          <div class="tech-item">lifelines (Cox PH)</div>
-          <div class="tech-item">Isolation Forest</div>
-          <div class="tech-item">K-Means</div>
-        </div>
-      </div>
+<!-- ════════════════════════ OUTPUTS ════════════════════════ -->
+<section id="outputs">
+  <div class="section-label"><span></span> Stage 7 & 8</div>
+  <h2 class="section-title">System <span class="hl-pink">Outputs</span></h2>
+  <p class="section-sub">Six JSON documents produced per session. All parent-facing text is rule-generated — no raw ML numbers are ever shown on the parent dashboard.</p>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">♟️</div>
-        <div class="tech-cat-name">Reinforcement Learning</div>
-        <div class="tech-items">
-          <div class="tech-item">Contextual Bandit</div>
-          <div class="tech-item">Q-Learning</div>
-          <div class="tech-item">Reward Feedback</div>
-        </div>
-      </div>
+  <div class="output-grid" id="output-grid"></div>
+</section>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🔬</div>
-        <div class="tech-cat-name">Explainability & Cal.</div>
-        <div class="tech-items">
-          <div class="tech-item">SHAP</div>
-          <div class="tech-item">CalibratedClassifierCV</div>
-          <div class="tech-item">Isotonic Regression</div>
-        </div>
-      </div>
+<!-- ════════════════════════ LIVE SIMULATION ════════════════════════ -->
+<section id="simulate" style="max-width:1200px;margin:0 auto;padding:2rem 2rem 5rem">
+  <div class="sim-section">
+    <div class="section-label" style="justify-content:center"><span></span> End-to-End</div>
+    <h2 class="section-title" style="text-align:center">Live Pipeline <span class="grad-text">Simulation</span></h2>
+    <p style="color:var(--muted);max-width:520px;margin:0 auto 2rem;font-size:.95rem;line-height:1.7;text-align:center">
+      Watch every stage activate in sequence — from gameplay events to parent summary — in real time.
+    </p>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🛠️</div>
-        <div class="tech-cat-name">Data & Engineering</div>
-        <div class="tech-items">
-          <div class="tech-item">pandas</div>
-          <div class="tech-item">numpy</div>
-          <div class="tech-item">scikit-learn</div>
-          <div class="tech-item">imbalanced-learn</div>
-          <div class="tech-item">scipy</div>
-        </div>
-      </div>
+    <div class="sim-pipeline" id="sim-pipeline">
+      <div class="sim-node"><div class="sim-icon" id="sn0">👨‍👩‍👧</div><span class="sim-label">Onboarding</span></div>
+      <div class="sim-arrow" id="sa0"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn1">🎮</div><span class="sim-label">Events</span></div>
+      <div class="sim-arrow" id="sa1"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn2">⚙️</div><span class="sim-label">Features</span></div>
+      <div class="sim-arrow" id="sa2"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn3" style="background:rgba(99,102,241,.1)">🧠</div><span class="sim-label">Model 1</span></div>
+      <div class="sim-arrow" id="sa3"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn4" style="background:rgba(245,158,11,.1)">⚡</div><span class="sim-label">Model 2</span></div>
+      <div class="sim-arrow" id="sa4"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn5" style="background:rgba(16,185,129,.1)">📐</div><span class="sim-label">Formula</span></div>
+      <div class="sim-arrow" id="sa5"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn6">🌐</div><span class="sim-label">Skill Graph</span></div>
+      <div class="sim-arrow" id="sa6"></div>
+      <div class="sim-node"><div class="sim-icon" id="sn7">📊</div><span class="sim-label">Dashboard</span></div>
+    </div>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">🌐</div>
-        <div class="tech-cat-name">API & Validation</div>
-        <div class="tech-items">
-          <div class="tech-item">FastAPI</div>
-          <div class="tech-item">Pydantic</div>
-          <div class="tech-item">REST JSON</div>
-          <div class="tech-item">Strict Schema</div>
-        </div>
-      </div>
+    <button class="simulate-btn" id="sim-btn" onclick="runSimulation()">
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+      Start Simulation
+    </button>
 
-      <div class="tech-category">
-        <div class="tech-cat-icon">💾</div>
-        <div class="tech-cat-name">Serialization</div>
-        <div class="tech-items">
-          <div class="tech-item">joblib</div>
-          <div class="tech-item">pickle</div>
-          <div class="tech-item">artifacts/ store</div>
-        </div>
-      </div>
+    <div class="sim-log" id="sim-log" style="display:none"></div>
 
+    <div id="sim-result" style="display:none;margin-top:2rem;padding:1.5rem;background:var(--card);border:1px solid var(--green);border-radius:16px;max-width:560px;margin-left:auto;margin-right:auto;text-align:left">
+      <div style="font-size:.8rem;color:var(--green);font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:1rem">Pipeline Complete — 21ms</div>
+      <div id="sim-result-content"></div>
     </div>
   </div>
+</section>
 
-  <!-- ── Principles ── -->
-  <div class="section-header reveal">
-    <h2>Design Principles</h2>
-    <p>Core values built into every model and pipeline decision</p>
-    <div class="section-divider"></div>
-  </div>
-
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:1rem; margin-bottom:5rem;" class="reveal">
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">🔒</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Privacy-First</div>
-      <div style="font-size:0.72rem; color:var(--muted);">PII stripped before any model sees data. No user_id stored in artifacts.</div>
-    </div>
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">🏥</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Clinical Safety</div>
-      <div style="font-size:0.72rem; color:var(--muted);">Hard constraint overrides ensure 0% safety violations. WHO/NIDA guidelines embedded.</div>
-    </div>
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">💡</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Explainable AI</div>
-      <div style="font-size:0.72rem; color:var(--muted);">SHAP values on every prediction. Top-3 feature contributions surfaced to users.</div>
-    </div>
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">⚡</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Real-Time Ready</div>
-      <div style="font-size:0.72rem; color:var(--muted);">FastAPI endpoints, joblib artifacts, &lt;200ms inference for emergency response.</div>
-    </div>
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">🧬</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Multi-Modal ML</div>
-      <div style="font-size:0.72rem; color:var(--muted);">Classification, regression, survival, clustering, anomaly, LSTM, and RL — all in one suite.</div>
-    </div>
-    <div class="df-box" style="text-align:center; padding:1.5rem 1rem;">
-      <div style="font-size:2rem; margin-bottom:0.5rem;">🎯</div>
-      <div style="font-weight:700; font-size:0.85rem; margin-bottom:0.3rem;">Holistic Support</div>
-      <div style="font-size:0.72rem; color:var(--muted);">Addresses risk, nutrition, physical activity, mental health, and crisis — simultaneously.</div>
-    </div>
-  </div>
-
-</div>
-
-<!-- Footer -->
-<footer class="footer">
-  <div class="footer-logo">Second Chance</div>
-  <div>AI-Powered Addiction Recovery Platform — System Design Document</div>
-  <div style="margin-top:0.3rem; font-size:0.72rem;">Built with XGBoost · LightGBM · PyTorch · FastAPI · SHAP · lifelines</div>
+<footer>
+  <p><strong>Adaptive Learning Intelligence Engine</strong> — Hackathon Grade</p>
+  <p style="margin-top:.4rem">Exactly 2 ML models &nbsp;·&nbsp; Everything else formula-based &nbsp;·&nbsp; All outputs JSON &nbsp;·&nbsp; Child-safe &nbsp;·&nbsp; Parent-friendly</p>
 </footer>
 
-<!-- Scripts -->
+<!-- ══════════════════════════════ SCRIPTS ══════════════════════════════ -->
 <script>
-  /* ── Particle Generator ── */
-  const particleContainer = document.getElementById('particles');
-  const colors = ['#63b3ed', '#9f7aea', '#48bb78', '#f6ad55', '#fc8181'];
+// ─── PROGRESS BAR ─────────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const el  = document.getElementById('progress-bar');
+  const pct = window.scrollY / (document.body.scrollHeight - window.innerHeight) * 100;
+  el.style.width = pct + '%';
+});
 
-  for (let i = 0; i < 40; i++) {
-    const p = document.createElement('div');
-    p.className = 'particle';
-    const size = Math.random() * 4 + 1;
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    const drift = (Math.random() - 0.5) * 200;
-    const duration = Math.random() * 15 + 10;
-    const delay = Math.random() * 15;
-    const left = Math.random() * 100;
+// ─── HERO CANVAS PARTICLES ────────────────────────────────────
+(function() {
+  const canvas = document.getElementById('hero-canvas');
+  const ctx    = canvas.getContext('2d');
+  let W, H, particles = [], lines = [];
 
-    p.style.cssText = `
-      width: ${size}px;
-      height: ${size}px;
-      background: ${color};
-      left: ${left}%;
-      --drift: ${drift}px;
-      animation-duration: ${duration}s;
-      animation-delay: ${delay}s;
-      box-shadow: 0 0 ${size * 2}px ${color};
-    `;
-    particleContainer.appendChild(p);
+  function resize() { W = canvas.width = canvas.offsetWidth; H = canvas.height = canvas.offsetHeight; }
+  resize(); window.addEventListener('resize', resize);
+
+  const COLORS = ['#6366f1','#3b82f6','#8b5cf6','#ec4899','#06b6d4'];
+
+  class Particle {
+    constructor() { this.reset(); }
+    reset() {
+      this.x    = Math.random() * W;
+      this.y    = Math.random() * H;
+      this.vx   = (Math.random() - .5) * .5;
+      this.vy   = (Math.random() - .5) * .5;
+      this.r    = Math.random() * 2 + 1;
+      this.col  = COLORS[Math.floor(Math.random() * COLORS.length)];
+      this.life = Math.random();
+    }
+    update() {
+      this.x += this.vx; this.y += this.vy;
+      if (this.x < 0 || this.x > W || this.y < 0 || this.y > H) this.reset();
+    }
+    draw() {
+      ctx.beginPath();
+      ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
+      ctx.fillStyle = this.col + '99';
+      ctx.fill();
+    }
   }
 
-  /* ── Scroll Reveal ── */
-  const revealObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
+  for (let i = 0; i < 80; i++) particles.push(new Particle());
+
+  function drawLines() {
+    for (let i = 0; i < particles.length; i++) {
+      for (let j = i + 1; j < particles.length; j++) {
+        const dx = particles[i].x - particles[j].x;
+        const dy = particles[i].y - particles[j].y;
+        const d  = Math.sqrt(dx*dx + dy*dy);
+        if (d < 120) {
+          ctx.beginPath();
+          ctx.moveTo(particles[i].x, particles[i].y);
+          ctx.lineTo(particles[j].x, particles[j].y);
+          ctx.strokeStyle = `rgba(99,102,241,${(1 - d/120) * .25})`;
+          ctx.lineWidth   = .5;
+          ctx.stroke();
+        }
       }
+    }
+  }
+
+  function animate() {
+    ctx.clearRect(0, 0, W, H);
+    particles.forEach(p => { p.update(); p.draw(); });
+    drawLines();
+    requestAnimationFrame(animate);
+  }
+  animate();
+})();
+
+// ─── SCROLL ANIMATIONS ────────────────────────────────────────
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      e.target.classList.add('visible');
+      // trigger timeline items inside
+      e.target.querySelectorAll('.timeline-item').forEach((t,i) => {
+        setTimeout(() => t.classList.add('visible'), i * 200);
+      });
+    }
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.step-card, .output-card').forEach(el => observer.observe(el));
+
+// Trigger onboarding form on scroll
+const obForm = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    document.querySelectorAll('.form-field').forEach(f => {
+      f.style.opacity = '1';
+      f.style.transform = 'translateY(0)';
     });
-  }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('#onboard-timeline .timeline-item').forEach((t,i) => {
+      setTimeout(() => t.classList.add('visible'), 300 + i * 250);
+    });
+    animateFeatureTables();
+    obForm.disconnect();
+  }
+}, { threshold: .2 });
+obForm.observe(document.getElementById('onboard-form'));
 
-  document.querySelectorAll('.reveal').forEach(el => revealObserver.observe(el));
+// Start event log on scroll
+const obEvents = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { startEventLog(); obEvents.disconnect(); }
+}, { threshold: .3 });
+obEvents.observe(document.getElementById('event-log'));
 
-  /* ── Feature card stagger on scroll ── */
-  const cardObserver = new IntersectionObserver((entries) => {
-    entries.forEach((entry, i) => {
-      if (entry.isIntersecting) {
+// ─── EVENT LOG SIMULATION ─────────────────────────────────────
+const EVENT_DATA = [
+  { skill:'counting',       correct:true,  rt:'1240ms',  color:'ev-green' },
+  { skill:'phonics',        correct:false, rt:'3800ms',  color:'ev-red'   },
+  { skill:'color_sorting',  correct:true,  rt:'980ms',   color:'ev-green' },
+  { skill:'counting',       correct:true,  rt:'1100ms',  color:'ev-green' },
+  { skill:'letter_recog',   correct:true,  rt:'2200ms',  color:'ev-green' },
+  { skill:'phonics',        correct:false, rt:'4100ms',  color:'ev-red'   },
+  { skill:'shape_recog',    correct:true,  rt:'1350ms',  color:'ev-green' },
+  { skill:'color_sorting',  correct:true,  rt:'880ms',   color:'ev-green' },
+  { skill:'counting',       correct:true,  rt:'950ms',   color:'ev-green' },
+  { skill:'phonics',        correct:true,  rt:'2600ms',  color:'ev-amber' },
+  { skill:'number_order',   correct:false, rt:'5200ms',  color:'ev-red'   },
+  { skill:'memory_recall',  correct:true,  rt:'2800ms',  color:'ev-green' },
+];
+
+function startEventLog() {
+  const log = document.getElementById('event-log');
+  let i = 0;
+  function addEvent() {
+    const e   = EVENT_DATA[i % EVENT_DATA.length];
+    const row = document.createElement('div');
+    row.className = 'event-row';
+    row.innerHTML = `
+      <div class="event-dot ${e.color}"></div>
+      <span style="color:var(--cyan);min-width:130px">${e.skill}</span>
+      <span style="${e.correct ? 'color:var(--green)' : 'color:var(--red)'}">${e.correct ? '✓ correct' : '✗ wrong'}</span>
+      <span style="color:var(--muted);margin-left:auto">${e.rt}</span>
+    `;
+    log.appendChild(row);
+    if (log.children.length > 5) log.removeChild(log.firstChild);
+    i++;
+    setTimeout(addEvent, 900 + Math.random() * 500);
+  }
+  addEvent();
+}
+
+// ─── FEATURE TABLE ANIMATION ──────────────────────────────────
+function animateFeatureTables() {
+  const skillVals = ['0.71','0.65','-8.2ms','0.28','4','1','0.82','0.35'];
+  const engVals   = ['+14.5','0.34','4200ms','0.31','0.58','0.62','3','2.1/min'];
+  const sfIds     = ['sf1','sf2','sf3','sf4','sf5','sf6','sf7','sf8'];
+  const efIds     = ['ef1','ef2','ef3','ef4','ef5','ef6','ef7','ef8'];
+
+  sfIds.forEach((id, i) => setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = skillVals[i]; el.style.color = 'var(--green)'; }
+  }, i * 120));
+
+  efIds.forEach((id, i) => setTimeout(() => {
+    const el = document.getElementById(id);
+    if (el) { el.textContent = engVals[i]; el.style.color = 'var(--amber)'; }
+  }, i * 120));
+}
+
+// ─── SKILL BARS ───────────────────────────────────────────────
+const SKILLS = [
+  { name:'Phonics & Sounds',        prob:.31, class:'low'       },
+  { name:'Letter Recognition',      prob:.48, class:'developing'},
+  { name:'Counting',                prob:.62, class:'developing'},
+  { name:'Number Order',            prob:.28, class:'low'       },
+  { name:'Shape Recognition',       prob:.67, class:'developing'},
+  { name:'Color Sorting',           prob:.72, class:'high'      },
+  { name:'Hand-Eye Coordination',   prob:.45, class:'developing'},
+  { name:'Focus & Attention',       prob:.38, class:'low'       },
+  { name:'Memory',                  prob:.30, class:'low'       },
+  { name:'Social Awareness',        prob:.50, class:'developing'},
+  { name:'Emotional Understanding', prob:.38, class:'low'       },
+];
+
+function buildSkillBars() {
+  const grid = document.getElementById('skill-bars');
+  grid.innerHTML = '';
+  SKILLS.forEach((s, i) => {
+    const barClass  = s.class === 'high' ? 'bar-high' : s.class === 'developing' ? 'bar-developing' : 'bar-low';
+    const badgeClass= `badge-${s.class}`;
+    const colorMap  = {low:'var(--red)', developing:'var(--amber)', high:'var(--green)'};
+
+    const row = document.createElement('div');
+    row.className = 'skill-row';
+    row.innerHTML = `
+      <span class="skill-name">${s.name}</span>
+      <div class="skill-bar-bg">
+        <div class="skill-bar-fill ${barClass}" id="sbar-${i}" style="width:0%"></div>
+      </div>
+      <div style="text-align:right">
+        <div class="skill-prob" id="sprob-${i}" style="color:${colorMap[s.class]}">0.00</div>
+        <span class="mastery-badge ${badgeClass}">${s.class}</span>
+      </div>
+    `;
+    grid.appendChild(row);
+  });
+}
+
+function animateSkillBars() {
+  SKILLS.forEach((s, i) => {
+    const bar  = document.getElementById(`sbar-${i}`);
+    const prob = document.getElementById(`sprob-${i}`);
+    if (!bar || !prob) return;
+    bar.style.width = '0%';
+    prob.textContent = '0.00';
+
+    setTimeout(() => {
+      bar.style.width = (s.prob * 100) + '%';
+      // Count up number
+      let start = 0; const end = s.prob; const dur = 1200;
+      const t0 = performance.now();
+      function tick(now) {
+        const p = Math.min((now - t0) / dur, 1);
+        const ease = 1 - Math.pow(1 - p, 3);
+        prob.textContent = (start + (end - start) * ease).toFixed(2);
+        if (p < 1) requestAnimationFrame(tick);
+        else prob.textContent = end.toFixed(2);
+      }
+      requestAnimationFrame(tick);
+    }, i * 90);
+  });
+}
+
+// Trigger skill bars when section visible
+const obSkill = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { buildSkillBars(); setTimeout(animateSkillBars, 300); obSkill.disconnect(); }
+}, { threshold: .2 });
+const skillCard = document.getElementById('skill-mastery-card');
+if (skillCard) obSkill.observe(skillCard);
+
+// ─── ENGAGEMENT GAUGE ─────────────────────────────────────────
+const ENG_STATES = [
+  { state:'Engaged',  fat:.04, neu:.09, eng:.87, color:'#10b981', gaugePct:.90 },
+  { state:'Neutral',  fat:.28, neu:.61, eng:.11, color:'#f59e0b', gaugePct:.50 },
+  { state:'Fatigued', fat:.91, neu:.07, eng:.02, color:'#ef4444', gaugePct:.08 },
+];
+let engIdx = 1;  // start at neutral
+
+function drawGauge(pct, color) {
+  const canvas = document.getElementById('gauge-canvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const W   = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const cx = W / 2, cy = H * .88, r = W * .42;
+  const startA = Math.PI, endA = 2 * Math.PI;
+
+  // Background arc
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, endA);
+  ctx.strokeStyle = '#1e2d4a';
+  ctx.lineWidth   = 14;
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+
+  // Gradient filled arc
+  const grad = ctx.createLinearGradient(cx - r, cy, cx + r, cy);
+  grad.addColorStop(0, '#ef4444');
+  grad.addColorStop(.5, '#f59e0b');
+  grad.addColorStop(1, '#10b981');
+
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, startA + pct * Math.PI);
+  ctx.strokeStyle = grad;
+  ctx.lineWidth   = 14;
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+
+  // Needle
+  const angle = Math.PI + pct * Math.PI;
+  const nx = cx + r * .75 * Math.cos(angle);
+  const ny = cy + r * .75 * Math.sin(angle);
+  ctx.beginPath();
+  ctx.moveTo(cx, cy);
+  ctx.lineTo(nx, ny);
+  ctx.strokeStyle = '#fff';
+  ctx.lineWidth   = 2.5;
+  ctx.lineCap     = 'round';
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+
+  // Labels
+  ctx.fillStyle = '#64748b';
+  ctx.font      = 'bold 10px Inter, sans-serif';
+  ctx.textAlign = 'left';
+  ctx.fillText('Tired', cx - r * 1.05, cy + 4);
+  ctx.textAlign = 'right';
+  ctx.fillText('Focused', cx + r * 1.05, cy + 4);
+}
+
+function setEngagement(idx) {
+  const s = ENG_STATES[idx];
+  document.getElementById('gauge-state-text').textContent  = s.state;
+  document.getElementById('gauge-state-text').style.color  = s.color;
+  document.getElementById('gauge-sub-text').textContent    = `fatigue risk: ${s.fat.toFixed(2)}`;
+
+  document.getElementById('bar-fat').style.width = (s.fat * 100) + '%';
+  document.getElementById('bar-neu').style.width = (s.neu * 100) + '%';
+  document.getElementById('bar-eng').style.width = (s.eng * 100) + '%';
+  document.getElementById('prob-fat').textContent = s.fat.toFixed(2);
+  document.getElementById('prob-neu').textContent = s.neu.toFixed(2);
+  document.getElementById('prob-eng').textContent = s.eng.toFixed(2);
+
+  const badge = document.getElementById('alert-badge');
+  badge.style.display = 'block';
+  if (s.fat >= .80) {
+    badge.textContent = '🔴 HARD STOP — End session now';
+    badge.style.background = 'rgba(239,68,68,.15)';
+    badge.style.border = '1px solid rgba(239,68,68,.3)';
+    badge.style.color = 'var(--red)';
+  } else if (s.fat >= .60) {
+    badge.textContent = '🟡 SOFT ALERT — Shorten tasks';
+    badge.style.background = 'rgba(245,158,11,.15)';
+    badge.style.border = '1px solid rgba(245,158,11,.3)';
+    badge.style.color = 'var(--amber)';
+  } else {
+    badge.textContent = '🟢 Continue — Engagement good';
+    badge.style.background = 'rgba(16,185,129,.15)';
+    badge.style.border = '1px solid rgba(16,185,129,.3)';
+    badge.style.color = 'var(--green)';
+  }
+
+  // Animate gauge
+  let current = 0.5;
+  const target = s.gaugePct;
+  const step = () => {
+    current += (target - current) * .1;
+    drawGauge(current, s.color);
+    if (Math.abs(current - target) > .001) requestAnimationFrame(step);
+  };
+  step();
+}
+
+function animateEngagement() {
+  engIdx = (engIdx + 1) % ENG_STATES.length;
+  setEngagement(engIdx);
+}
+
+const obEng = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) { setTimeout(() => setEngagement(1), 400); obEng.disconnect(); }
+}, { threshold: .3 });
+const engCanvas = document.getElementById('gauge-canvas');
+if (engCanvas) obEng.observe(engCanvas);
+
+// ─── FORMULA ENGINE ───────────────────────────────────────────
+const FORMULAS = [
+  { cond:'mastery_prob < 0.40',       action:'Reduce difficulty by 1', why:'Child is in struggle zone — make it easier to rebuild confidence' },
+  { cond:'mastery_prob 0.40–0.70',    action:'Maintain current difficulty', why:'Zone of Proximal Development — ideal learning zone, no change needed' },
+  { cond:'mastery_prob >= 0.70',      action:'Increase difficulty by 1', why:'Child has mastered this level — push to the next challenge' },
+  { cond:'confidence < 0.55',         action:'Hold difficulty steady', why:'Model is uncertain — do not make changes based on low-confidence prediction' },
+  { cond:'fatigue_risk >= 0.80',      action:'END SESSION — victory moment', why:'Hard stop: child is too tired. Force ending prevents negative associations' },
+  { cond:'fatigue_risk >= 0.60',      action:'Switch to kinesthetic mode', why:'Movement re-engages children who are mentally tiring. Switch before full fatigue.' },
+  { cond:'3+ consecutive errors',     action:'Hint intensity = HIGH', why:'Error burst signals comprehension gap — step-by-step guidance needed immediately' },
+  { cond:'streak >= 5',               action:'Reward = celebration 🎉', why:'Sustained success deserves amplified positive reinforcement' },
+  { cond:'mastery crossed 0.70',      action:'Reward = progress badge', why:'Milestone achievement — parent-facing badge reinforces long-term motivation' },
+  { cond:'best modality > 0.80 rate', action:'Prioritise that modality', why:'Child excels in this input channel — route tasks through their strength' },
+  { cond:'session_ratio >= 0.85',     action:'Trigger victory moment', why:'Near session time limit — end on a positive note before fatigue sets in' },
+  { cond:'regression detected',       action:'reinforcement_need = URGENT', why:'Skill declining after previous mastery — flag for intensive support' },
+];
+
+function buildFormulaCards() {
+  const grid = document.getElementById('formula-grid');
+  FORMULAS.forEach((f, i) => {
+    const card = document.createElement('div');
+    card.className = 'formula-card';
+    card.id = `fc-${i}`;
+    card.innerHTML = `
+      <span class="formula-condition">${f.cond}</span>
+      <div class="formula-action">→ ${f.action}</div>
+      <div class="formula-why">${f.why}</div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function animateFormulas() {
+  FORMULAS.forEach((_, i) => {
+    const el = document.getElementById(`fc-${i}`);
+    if (el) {
+      setTimeout(() => { el.classList.add('lit'); }, i * 100);
+      setTimeout(() => { el.classList.add('active-rule'); }, i * 100 + 50);
+      setTimeout(() => { el.classList.remove('active-rule'); }, i * 100 + 800);
+    }
+  });
+}
+
+const obFormula = new IntersectionObserver(entries => {
+  if (entries[0].isIntersecting) {
+    FORMULAS.forEach((_, i) => {
+      setTimeout(() => document.getElementById(`fc-${i}`)?.classList.add('lit'), i * 80);
+    });
+    obFormula.disconnect();
+  }
+}, { threshold: .1 });
+
+function initFormula() {
+  buildFormulaCards();
+  obFormula.observe(document.getElementById('formula-grid'));
+}
+
+// ─── DECISION CHAIN ───────────────────────────────────────────
+const CHAIN_STEPS = [
+  { type:'check',  text:'READ Model 1 → phonics: mastery_prob = 0.31 (confidence = 0.72)',  delay:0   },
+  { type:'check',  text:'READ Model 2 → engagement_state = "neutral", fatigue_risk = 0.28', delay:500 },
+  { type:'rule',   text:'fatigue_risk 0.28 < 0.80 → session continues',                      delay:1000},
+  { type:'rule',   text:'fatigue_risk 0.28 < 0.60 → no modality switch',                     delay:1400},
+  { type:'decide', text:'next_skill = phonics  (lowest mastery, unlocked)',                   delay:1900},
+  { type:'rule',   text:'mastery_prob 0.31 < 0.40 → reduce difficulty',                       delay:2400},
+  { type:'rule',   text:'age_band = preschool → difficulty clamped at min=2',                 delay:2800},
+  { type:'decide', text:'next_difficulty = 2 (easy)',                                          delay:3200},
+  { type:'rule',   text:'preferred_modality = auditory + no fatigue → use auditory',          delay:3700},
+  { type:'decide', text:'next_modality = auditory',                                            delay:4100},
+  { type:'rule',   text:'mastery 0.31 in [0.30, 0.50) → hint_intensity = medium',            delay:4500},
+  { type:'rule',   text:'streak = 2, no milestone → reward = sparkle',                        delay:4900},
+  { type:'out',    text:'OUTPUT → { skill:phonics, difficulty:easy, modality:auditory, hint:medium, reward:sparkle }', delay:5400},
+];
+
+function runDecisionChain() {
+  const container = document.getElementById('decision-chain');
+  container.innerHTML = '';
+  const colorMap = { check:'var(--blue)', rule:'var(--green)', decide:'var(--amber)', out:'var(--pink)' };
+  const iconMap  = { check:'◎', rule:'▷', decide:'★', out:'✓' };
+
+  CHAIN_STEPS.forEach(step => {
+    setTimeout(() => {
+      const div = document.createElement('div');
+      div.style.cssText = `display:flex;align-items:flex-start;gap:.6rem;padding:.3rem 0;animation:slideInLeft .3s ease`;
+      div.innerHTML = `
+        <span style="color:${colorMap[step.type]};flex-shrink:0">${iconMap[step.type]}</span>
+        <span style="color:${step.type==='out' ? colorMap.out : 'var(--text)'}">${step.text}</span>
+      `;
+      container.appendChild(div);
+      container.scrollTop = container.scrollHeight;
+    }, step.delay);
+  });
+}
+
+// ─── OUTPUT CARDS ─────────────────────────────────────────────
+const OUTPUTS = [
+  {
+    title: 'Starter Profile', icon: '👤',
+    headerBg: 'rgba(236,72,153,.08)', headerBorder: 'rgba(236,72,153,.2)',
+    badge: 'Onboarding', badgeBg: 'rgba(236,72,153,.15)', badgeColor: '#ec4899',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"child_id"</span><span class="j-punc">: </span><span class="j-str">"a1b2c3d4..."</span><span class="j-punc">,</span>
+  <span class="j-key">"name"</span><span class="j-punc">: </span><span class="j-str">"Aarav"</span><span class="j-punc">,</span>
+  <span class="j-key">"age_band"</span><span class="j-punc">: </span><span class="j-str">"preschool"</span><span class="j-punc">,</span>
+  <span class="j-key">"preferred_modality"</span><span class="j-punc">: </span><span class="j-str">"auditory"</span><span class="j-punc">,</span>
+  <span class="j-key">"allowed_session_minutes"</span><span class="j-punc">: </span><span class="j-num">15</span><span class="j-punc">,</span>
+  <span class="j-key">"flags"</span><span class="j-punc">: {</span>
+    <span class="j-key">"new_user"</span><span class="j-punc">: </span><span class="j-bool">true</span><span class="j-punc">,</span>
+    <span class="j-key">"cold_start"</span><span class="j-punc">: </span><span class="j-bool">true</span>
+  <span class="j-punc">}</span>
+<span class="j-punc">}</span>`,
+  },
+  {
+    title: 'Skill Graph', icon: '🌐',
+    headerBg: 'rgba(99,102,241,.08)', headerBorder: 'rgba(99,102,241,.2)',
+    badge: 'ML Model 1', badgeBg: 'rgba(99,102,241,.15)', badgeColor: '#6366f1',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"skill_nodes"</span><span class="j-punc">: [</span>
+    <span class="j-punc">{</span>
+      <span class="j-key">"skill_name"</span><span class="j-punc">: </span><span class="j-str">"counting"</span><span class="j-punc">,</span>
+      <span class="j-key">"mastery_prob"</span><span class="j-punc">: </span><span class="j-num">0.62</span><span class="j-punc">,</span>
+      <span class="j-key">"mastery_class"</span><span class="j-punc">: </span><span class="j-str">"developing"</span><span class="j-punc">,</span>
+      <span class="j-key">"trend"</span><span class="j-punc">: </span><span class="j-str">"improving"</span><span class="j-punc">,</span>
+      <span class="j-key">"confidence"</span><span class="j-punc">: </span><span class="j-num">0.83</span>
+    <span class="j-punc">}</span>
+  <span class="j-punc">],</span>
+  <span class="j-key">"overall_progress_pct"</span><span class="j-punc">: </span><span class="j-num">46.3</span>
+<span class="j-punc">}</span>`,
+  },
+  {
+    title: 'Engagement State', icon: '⚡',
+    headerBg: 'rgba(245,158,11,.08)', headerBorder: 'rgba(245,158,11,.2)',
+    badge: 'ML Model 2', badgeBg: 'rgba(245,158,11,.15)', badgeColor: '#f59e0b',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"engagement_state"</span><span class="j-punc">: </span><span class="j-str">"neutral"</span><span class="j-punc">,</span>
+  <span class="j-key">"fatigue_risk"</span><span class="j-punc">: </span><span class="j-num">0.28</span><span class="j-punc">,</span>
+  <span class="j-key">"attention_level"</span><span class="j-punc">: </span><span class="j-num">0.55</span><span class="j-punc">,</span>
+  <span class="j-key">"confidence"</span><span class="j-punc">: </span><span class="j-num">0.71</span><span class="j-punc">,</span>
+  <span class="j-key">"alert_level"</span><span class="j-punc">: </span><span class="j-str">"none"</span><span class="j-punc">,</span>
+  <span class="j-key">"probabilities"</span><span class="j-punc">: {</span>
+    <span class="j-key">"fatigued"</span><span class="j-punc">: </span><span class="j-num">0.28</span><span class="j-punc">,</span>
+    <span class="j-key">"neutral"</span><span class="j-punc">: </span><span class="j-num">0.71</span><span class="j-punc">,</span>
+    <span class="j-key">"engaged"</span><span class="j-punc">: </span><span class="j-num">0.01</span>
+  <span class="j-punc">}</span>
+<span class="j-punc">}</span>`,
+  },
+  {
+    title: 'Next Activity', icon: '🎯',
+    headerBg: 'rgba(16,185,129,.08)', headerBorder: 'rgba(16,185,129,.2)',
+    badge: 'Formula Engine', badgeBg: 'rgba(16,185,129,.15)', badgeColor: '#10b981',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"next_skill_focus"</span><span class="j-punc">: </span><span class="j-str">"phonics"</span><span class="j-punc">,</span>
+  <span class="j-key">"next_difficulty_label"</span><span class="j-punc">: </span><span class="j-str">"easy"</span><span class="j-punc">,</span>
+  <span class="j-key">"next_modality"</span><span class="j-punc">: </span><span class="j-str">"auditory"</span><span class="j-punc">,</span>
+  <span class="j-key">"hint_intensity"</span><span class="j-punc">: </span><span class="j-str">"medium"</span><span class="j-punc">,</span>
+  <span class="j-key">"reward_type"</span><span class="j-punc">: </span><span class="j-str">"sparkle"</span><span class="j-punc">,</span>
+  <span class="j-key">"reason"</span><span class="j-punc">: </span><span class="j-str">"phonics: low mastery (31%); auditory preferred"</span>
+<span class="j-punc">}</span>`,
+  },
+  {
+    title: 'Parent Summary', icon: '💬',
+    headerBg: 'rgba(139,92,246,.08)', headerBorder: 'rgba(139,92,246,.2)',
+    badge: 'Rule-Based Text', badgeBg: 'rgba(139,92,246,.15)', badgeColor: '#8b5cf6',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"human_summary"</span><span class="j-punc">: </span>
+    <span class="j-str">"Aarav had a great session. Color Sorting is strong. Phonics needs more practice."</span><span class="j-punc">,</span>
+  <span class="j-key">"recommended_offline_activity"</span><span class="j-punc">: </span>
+    <span class="j-str">"Point out letters on cereal boxes."</span><span class="j-punc">,</span>
+  <span class="j-key">"best_learning_style"</span><span class="j-punc">: {</span>
+    <span class="j-key">"modality"</span><span class="j-punc">: </span><span class="j-str">"auditory"</span><span class="j-punc">,</span>
+    <span class="j-key">"note"</span><span class="j-punc">: </span><span class="j-str">"Songs and rhymes work brilliantly."</span>
+  <span class="j-punc">}</span>
+<span class="j-punc">}</span>`,
+  },
+  {
+    title: 'Session Summary', icon: '📋',
+    headerBg: 'rgba(6,182,212,.08)', headerBorder: 'rgba(6,182,212,.2)',
+    badge: 'Rule-Based', badgeBg: 'rgba(6,182,212,.15)', badgeColor: '#06b6d4',
+    json: `<span class="j-punc">{</span>
+  <span class="j-key">"duration_minutes"</span><span class="j-punc">: </span><span class="j-num">12.0</span><span class="j-punc">,</span>
+  <span class="j-key">"tasks_completed"</span><span class="j-punc">: </span><span class="j-num">25</span><span class="j-punc">,</span>
+  <span class="j-key">"overall_accuracy"</span><span class="j-punc">: </span><span class="j-num">0.72</span><span class="j-punc">,</span>
+  <span class="j-key">"skills_improved"</span><span class="j-punc">: [</span>
+    <span class="j-str">"counting"</span><span class="j-punc">, </span><span class="j-str">"color_sorting"</span>
+  <span class="j-punc">],</span>
+  <span class="j-key">"recommended_next_session"</span><span class="j-punc">: </span>
+    <span class="j-str">"later_today_or_tomorrow"</span>
+<span class="j-punc">}</span>`,
+  },
+];
+
+function buildOutputCards() {
+  const grid = document.getElementById('output-grid');
+  OUTPUTS.forEach((o, i) => {
+    const card = document.createElement('div');
+    card.className = 'output-card';
+    card.style.transitionDelay = (i * 100) + 'ms';
+    card.innerHTML = `
+      <div class="output-header" style="background:${o.headerBg};border-color:${o.headerBorder}">
+        <span class="output-header-icon">${o.icon}</span>
+        <span class="output-header-title">${o.title}</span>
+        <span class="output-header-badge" style="background:${o.badgeBg};color:${o.badgeColor}">${o.badge}</span>
+      </div>
+      <div class="json-viewer">${o.json}</div>
+    `;
+    grid.appendChild(card);
+    setTimeout(() => observer.observe(card), 100);
+  });
+}
+
+// ─── FULL SIMULATION ──────────────────────────────────────────
+const SIM_STEPS = [
+  { node:0, msg:'[ONBOARD]  Loading child profile: Aarav, age=5.5y', color:'log-ok'  },
+  { node:1, msg:'[EVENTS]   Receiving gameplay events... 25 events collected', color:'log-fmt' },
+  { node:2, msg:'[FEATURES] Computing 30+ features from event window', color:'log-fmt' },
+  { node:3, msg:'[MODEL-1]  Running SkillMasteryClassifier (11 XGBoost models)...', color:'log-ml' },
+  { node:3, msg:'[MODEL-1]  phonics=0.31 | counting=0.62 | color_sort=0.72', color:'log-ml' },
+  { node:4, msg:'[MODEL-2]  Running EngagementClassifier (3-class XGBoost)...', color:'log-ml' },
+  { node:4, msg:'[MODEL-2]  state=neutral | fatigue_risk=0.28 | confidence=0.71', color:'log-ml' },
+  { node:5, msg:'[FORMULA]  Applying decision rules...', color:'log-fmt' },
+  { node:5, msg:'[FORMULA]  next=phonics | diff=easy | modal=auditory | hints=medium', color:'log-fmt' },
+  { node:6, msg:'[GRAPH]    Updating skill graph with EMA smoothing (α=0.70)', color:'log-ok'  },
+  { node:7, msg:'[DASH]     Generating parent summary in plain English', color:'log-out' },
+  { node:7, msg:'[DONE]     Pipeline complete in 20.9ms', color:'log-ok'  },
+];
+
+let simRunning = false;
+
+function runSimulation() {
+  if (simRunning) return;
+  simRunning = true;
+  const btn = document.getElementById('sim-btn');
+  const log = document.getElementById('sim-log');
+  const result = document.getElementById('sim-result');
+  btn.innerHTML = '<span class="spinning">⟳</span> Running...';
+  btn.disabled = true;
+  log.style.display = 'block';
+  log.innerHTML = '';
+  result.style.display = 'none';
+
+  // Reset nodes
+  for (let i = 0; i <= 7; i++) {
+    const n = document.getElementById(`sn${i}`);
+    if (n) { n.className = 'sim-icon'; n.style.background = ''; }
+  }
+
+  let delay = 0;
+  SIM_STEPS.forEach((step, idx) => {
+    delay += idx === 0 ? 100 : 500;
+    const d = delay;
+
+    setTimeout(() => {
+      // Activate node
+      const node = document.getElementById(`sn${step.node}`);
+      if (node) {
+        node.classList.add('processing');
+        // After half step, mark done
         setTimeout(() => {
-          entry.target.style.opacity = '1';
-          entry.target.style.transform = 'translateY(0)';
-        }, i * 100);
+          node.classList.remove('processing');
+          node.classList.add('done');
+          node.textContent = ['👨‍👩‍👧','🎮','⚙️','🧠','⚡','📐','🌐','📊'][step.node];
+          // Activate arrow
+          const arrow = document.getElementById(`sa${step.node}`);
+          if (arrow) arrow.classList.add('active');
+        }, 350);
       }
-    });
-  }, { threshold: 0.05 });
 
-  document.querySelectorAll('.feature-card').forEach(el => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(30px)';
-    el.style.transition = 'opacity 0.7s ease, transform 0.7s cubic-bezier(0.23,1,0.32,1)';
-    cardObserver.observe(el);
-  });
+      // Add log line
+      const line = document.createElement('div');
+      line.className = `sim-log-entry`;
+      const ts = new Date().toLocaleTimeString('en-US', {hour12:false, hour:'2-digit',minute:'2-digit',second:'2-digit'});
+      line.innerHTML = `<span class="log-ts">[${ts}] </span><span class="${step.color}">${step.msg}</span>`;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
 
-  /* ── Pipeline stage hover glow ── */
-  document.querySelectorAll('.pipeline-stage').forEach(stage => {
-    stage.addEventListener('mouseenter', () => {
-      stage.style.borderColor = 'rgba(99,179,237,0.5)';
-      stage.style.boxShadow = '0 8px 30px rgba(99,179,237,0.15)';
-    });
-    stage.addEventListener('mouseleave', () => {
-      stage.style.borderColor = '';
-      stage.style.boxShadow = '';
-    });
-  });
-
-  /* ── Meter animation on scroll ── */
-  const meterObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.querySelectorAll('.meter-fill').forEach(fill => {
-          fill.style.animation = 'none';
-          void fill.offsetWidth; // reflow
-          fill.style.animation = 'fill-meter 1.5s ease-out forwards';
-        });
+      // Final step
+      if (idx === SIM_STEPS.length - 1) {
+        setTimeout(() => {
+          result.style.display = 'block';
+          document.getElementById('sim-result-content').innerHTML = `
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;font-size:.82rem">
+              <div><span style="color:var(--muted)">Next Skill</span><div style="font-weight:700;color:var(--indigo);font-size:1rem;margin-top:.2rem">Phonics & Sounds</div></div>
+              <div><span style="color:var(--muted)">Difficulty</span><div style="font-weight:700;color:var(--amber);font-size:1rem;margin-top:.2rem">Easy (Level 2)</div></div>
+              <div><span style="color:var(--muted)">Modality</span><div style="font-weight:700;color:var(--cyan);font-size:1rem;margin-top:.2rem">Auditory</div></div>
+              <div><span style="color:var(--muted)">Engagement</span><div style="font-weight:700;color:var(--amber);font-size:1rem;margin-top:.2rem">Neutral (28% fatigue)</div></div>
+              <div style="grid-column:1/-1"><span style="color:var(--muted)">Parent Tip</span><div style="font-weight:500;color:var(--text);margin-top:.2rem;line-height:1.5">"Short, playful practice moments work best — even 5 minutes helps."</div></div>
+            </div>
+          `;
+          btn.innerHTML = `<svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg> Run Again`;
+          btn.disabled = false;
+          simRunning = false;
+        }, 600);
       }
-    });
-  }, { threshold: 0.3 });
-
-  document.querySelectorAll('.ml-pipeline-full').forEach(el => meterObserver.observe(el));
-
-  /* ── Active nav link ── */
-  const sections = document.querySelectorAll('[id]');
-  const navLinks = document.querySelectorAll('.nav-links a');
-
-  window.addEventListener('scroll', () => {
-    let current = '';
-    sections.forEach(section => {
-      if (window.scrollY >= section.offsetTop - 120) current = section.id;
-    });
-    navLinks.forEach(link => {
-      link.style.color = link.getAttribute('href') === `#${current}` ? '#63b3ed' : '';
-    });
+    }, d);
   });
+}
+
+// ─── INIT ALL ─────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  initFormula();
+  buildOutputCards();
+});
 </script>
-
 </body>
 </html>
